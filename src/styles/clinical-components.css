@@ -1,0 +1,767 @@
+/**
+ * WHASA Wound-Care Nurse Practitioner App - Clinical Components
+ * Specialized UI components for medical workflows and clinical interfaces
+ * 
+ * These components are designed specifically for wound care assessment,
+ * photo capture, measurement tools, and clinical forms.
+ */
+
+/* ========================================
+   CLINICAL WORKFLOW PROGRESS INDICATOR
+   ======================================== */
+
+.workflow-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-base);
+  background-color: var(--color-background-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+  overflow-x: auto;
+}
+
+.workflow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 80px;
+  position: relative;
+}
+
+.workflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-border-light);
+  z-index: 1;
+}
+
+.workflow-step.completed:not(:last-child)::after {
+  background-color: var(--color-success-green);
+}
+
+.workflow-step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-light);
+  border: 2px solid var(--color-border-light);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  position: relative;
+  z-index: 2;
+  transition: all var(--transition-fast);
+}
+
+.workflow-step.completed .workflow-step-icon {
+  background-color: var(--color-success-green);
+  border-color: var(--color-success-green);
+  color: var(--color-text-white);
+}
+
+.workflow-step.active .workflow-step-icon {
+  background-color: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+  transform: scale(1.1);
+}
+
+.workflow-step-label {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-tight);
+}
+
+.workflow-step.completed .workflow-step-label,
+.workflow-step.active .workflow-step-label {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ========================================
+   PATIENT INFORMATION CARD
+   ======================================== */
+
+.patient-card {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.patient-card-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-base) var(--spacing-lg);
+  background-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+  border-top-left-radius: calc(var(--border-radius-md) - 1px);
+  border-top-right-radius: calc(var(--border-radius-md) - 1px);
+}
+
+.patient-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-white);
+  margin-right: var(--spacing-base);
+}
+
+.patient-info h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.patient-info p {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+.patient-card-body {
+  padding: var(--spacing-lg);
+}
+
+.patient-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-base);
+}
+
+.patient-detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-detail-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.patient-detail-value {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ========================================
+   WOUND ASSESSMENT FORM
+   ======================================== */
+
+.assessment-section {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.assessment-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-base) var(--spacing-lg);
+  background-color: var(--color-background-light);
+  border-bottom: 1px solid var(--color-border-light);
+  border-top-left-radius: calc(var(--border-radius-md) - 1px);
+  border-top-right-radius: calc(var(--border-radius-md) - 1px);
+}
+
+.assessment-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: var(--spacing-sm);
+  color: var(--color-secondary-teal);
+}
+
+.assessment-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.assessment-body {
+  padding: var(--spacing-lg);
+}
+
+/* T.I.M.E. Assessment Grid */
+.time-assessment {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.time-category {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-base);
+}
+
+.time-category-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-base);
+}
+
+.time-category-letter {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-secondary-teal);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  margin-right: var(--spacing-base);
+}
+
+.time-category-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.time-category-subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   PHOTO CAPTURE INTERFACE
+   ======================================== */
+
+.photo-capture-area {
+  position: relative;
+  background-color: var(--color-background-light);
+  border: 2px dashed var(--color-border-medium);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-2xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-capture-area:hover {
+  border-color: var(--color-primary-blue);
+  background-color: rgba(47, 108, 155, 0.05);
+}
+
+.photo-capture-area.dragover {
+  border-color: var(--color-primary-blue);
+  background-color: rgba(47, 108, 155, 0.1);
+  transform: scale(1.02);
+}
+
+.photo-capture-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-base);
+}
+
+.photo-capture-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.photo-capture-subtext {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+
+/* Photo preview grid */
+.photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-base);
+  margin-top: var(--spacing-lg);
+}
+
+.photo-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--border-radius-base);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.photo-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.photo-preview-item:hover .photo-preview-overlay {
+  opacity: 1;
+}
+
+.photo-preview-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* ========================================
+   MEASUREMENT TOOLS
+   ======================================== */
+
+.measurement-tool {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.measurement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-base);
+}
+
+.measurement-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.measurement-input {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-base);
+  transition: border-color var(--transition-fast);
+}
+
+.measurement-input:focus {
+  border-color: var(--color-primary-blue);
+  box-shadow: 0 0 0 3px rgba(47, 108, 155, 0.1);
+}
+
+.measurement-unit {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Volume calculator */
+.volume-calculator {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-base);
+  margin-top: var(--spacing-base);
+  text-align: center;
+}
+
+.calculated-volume {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-blue);
+}
+
+.volume-formula {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+/* ========================================
+   CLINICAL SCALES AND RATINGS
+   ======================================== */
+
+.scale-rating {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.scale-header {
+  margin-bottom: var(--spacing-base);
+}
+
+.scale-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.scale-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Pain scale */
+.pain-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: var(--spacing-base) 0;
+}
+
+.pain-scale-number {
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border-radius: 50%;
+  border: 2px solid var(--color-border-medium);
+  background-color: var(--color-background-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pain-scale-number:hover {
+  border-color: var(--color-primary-blue);
+  transform: scale(1.1);
+}
+
+.pain-scale-number.selected {
+  background-color: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+}
+
+.pain-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-sm);
+}
+
+.pain-scale-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  flex: 1;
+}
+
+/* ========================================
+   TREATMENT PLAN COMPONENTS
+   ======================================== */
+
+.treatment-plan {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.treatment-plan-header {
+  background-color: var(--color-workflow-planning);
+  color: var(--color-text-white);
+  padding: var(--spacing-base) var(--spacing-lg);
+}
+
+.treatment-plan-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.treatment-steps {
+  padding: var(--spacing-lg);
+}
+
+.treatment-step {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--spacing-base) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.treatment-step:last-child {
+  border-bottom: none;
+}
+
+.treatment-step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-secondary-teal);
+  color: var(--color-text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  margin-right: var(--spacing-base);
+  flex-shrink: 0;
+}
+
+.treatment-step-content {
+  flex: 1;
+}
+
+.treatment-step-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.treatment-step-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.treatment-step-checkbox {
+  margin-left: auto;
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+}
+
+/* ========================================
+   NPWT DEVICE INTERFACE
+   ======================================== */
+
+.npwt-device-card {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.npwt-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.npwt-connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.connection-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-alert-red);
+  animation: pulse 2s infinite;
+}
+
+.connection-indicator.connected {
+  background-color: var(--color-success-green);
+  animation: none;
+}
+
+.npwt-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-base);
+}
+
+.npwt-setting {
+  text-align: center;
+  padding: var(--spacing-base);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-base);
+}
+
+.npwt-setting-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+}
+
+.npwt-setting-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.npwt-setting-unit {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   INVENTORY TRACKING
+   ======================================== */
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-base);
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-base);
+  margin-bottom: var(--spacing-sm);
+}
+
+.inventory-barcode {
+  width: 48px;
+  height: 32px;
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-sm);
+  margin-right: var(--spacing-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.inventory-details {
+  flex: 1;
+}
+
+.inventory-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.inventory-info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.inventory-quantity {
+  text-align: right;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.inventory-low-stock {
+  color: var(--color-alert-red);
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 767px) {
+  .workflow-progress {
+    padding: var(--spacing-sm);
+  }
+  
+  .workflow-step {
+    min-width: 60px;
+  }
+  
+  .workflow-step-icon {
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-xs);
+  }
+  
+  .time-assessment {
+    grid-template-columns: 1fr;
+  }
+  
+  .measurement-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .pain-scale {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  
+  .pain-scale-number {
+    width: calc((100% - var(--spacing-sm) * 4) / 5);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .npwt-settings {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-step-icon,
+  .pain-scale-number,
+  .connection-indicator {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .workflow-step-icon,
+  .pain-scale-number,
+  .treatment-step-number {
+    border-width: 3px;
+  }
+  
+  .photo-capture-area {
+    border-width: 3px;
+  }
+}
+
+/* Focus indicators for interactive elements */
+.pain-scale-number:focus,
+.treatment-step-checkbox:focus,
+.photo-capture-area:focus {
+  outline: 3px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}

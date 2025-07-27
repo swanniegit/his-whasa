@@ -1,0 +1,607 @@
+/**
+ * WHASA Wound-Care Nurse Practitioner App - Offline & Sync States
+ * UI components for offline capability and data synchronization
+ * 
+ * These components provide clear visual feedback about connectivity,
+ * sync status, and offline data storage for clinical environments.
+ */
+
+/* ========================================
+   CONNECTION STATUS INDICATOR
+   ======================================== */
+
+.connection-status {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-sticky);
+  padding: var(--spacing-sm) var(--spacing-base);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: transform var(--transition-base);
+  transform: translateY(-100%);
+}
+
+.connection-status.show {
+  transform: translateY(0);
+}
+
+.connection-status.online {
+  background-color: var(--color-success-green);
+  color: var(--color-text-white);
+}
+
+.connection-status.offline {
+  background-color: var(--color-alert-red);
+  color: var(--color-text-white);
+}
+
+.connection-status.reconnecting {
+  background-color: var(--color-accent-orange);
+  color: var(--color-text-white);
+}
+
+/* Connection indicator in header */
+.header-connection-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-success-green);
+  animation: pulse-gentle 2s infinite;
+}
+
+.connection-dot.offline {
+  background-color: var(--color-alert-red);
+  animation: none;
+}
+
+.connection-dot.syncing {
+  background-color: var(--color-accent-orange);
+  animation: pulse-fast 1s infinite;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulse-fast {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* ========================================
+   SYNC STATUS COMPONENTS
+   ======================================== */
+
+.sync-status-bar {
+  background-color: var(--color-background-white);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--spacing-sm) var(--spacing-base);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.sync-status-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.sync-status-icon.syncing {
+  color: var(--color-accent-orange);
+  animation: spin 1s linear infinite;
+}
+
+.sync-status-icon.synced {
+  color: var(--color-success-green);
+}
+
+.sync-status-icon.error {
+  color: var(--color-alert-red);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-status-text {
+  flex: 1;
+  color: var(--color-text-secondary);
+}
+
+.sync-status-time {
+  color: var(--color-text-light);
+  font-size: var(--font-size-xs);
+}
+
+/* Sync progress bar */
+.sync-progress-container {
+  background-color: var(--color-background-white);
+  padding: var(--spacing-base);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.sync-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.sync-progress-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.sync-progress-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.sync-progress-bar {
+  height: 4px;
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+}
+
+.sync-progress-fill {
+  height: 100%;
+  background-color: var(--color-primary-blue);
+  border-radius: var(--border-radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* ========================================
+   OFFLINE INDICATORS
+   ======================================== */
+
+.offline-indicator {
+  position: fixed;
+  bottom: 80px; /* Above bottom navigation */
+  left: var(--spacing-base);
+  right: var(--spacing-base);
+  background-color: var(--color-alert-red);
+  color: var(--color-text-white);
+  padding: var(--spacing-base);
+  border-radius: var(--border-radius-base);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-index-fixed);
+  transform: translateY(100px);
+  transition: transform var(--transition-base);
+}
+
+.offline-indicator.show {
+  transform: translateY(0);
+}
+
+.offline-indicator-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.offline-indicator-text {
+  flex: 1;
+}
+
+.offline-indicator-dismiss {
+  background: none;
+  border: none;
+  color: var(--color-text-white);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.offline-indicator-dismiss:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   DATA SYNC STATES
+   ======================================== */
+
+.data-sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-background-light);
+  color: var(--color-text-secondary);
+}
+
+.data-sync-indicator.pending {
+  background-color: rgba(242, 140, 56, 0.1);
+  color: var(--color-accent-orange-dark);
+}
+
+.data-sync-indicator.syncing {
+  background-color: rgba(47, 108, 155, 0.1);
+  color: var(--color-primary-blue-dark);
+}
+
+.data-sync-indicator.synced {
+  background-color: rgba(75, 181, 67, 0.1);
+  color: var(--color-success-green-dark);
+}
+
+.data-sync-indicator.error {
+  background-color: rgba(217, 83, 79, 0.1);
+  color: var(--color-alert-red-dark);
+}
+
+.data-sync-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.data-sync-icon.syncing {
+  animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   OFFLINE FORM STORAGE
+   ======================================== */
+
+.offline-form-container {
+  position: relative;
+}
+
+.offline-storage-indicator {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background-color: var(--color-accent-orange);
+  color: var(--color-text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  box-shadow: var(--shadow-sm);
+}
+
+.offline-storage-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* Auto-save indicator */
+.auto-save-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.auto-save-indicator.saving {
+  color: var(--color-accent-orange);
+}
+
+.auto-save-indicator.saved {
+  color: var(--color-success-green);
+}
+
+.auto-save-indicator.error {
+  color: var(--color-alert-red);
+}
+
+.auto-save-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.auto-save-icon.saving {
+  animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   RETRY MECHANISMS
+   ======================================== */
+
+.retry-banner {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-alert-red);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-base);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+}
+
+.retry-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-alert-red);
+  flex-shrink: 0;
+}
+
+.retry-content {
+  flex: 1;
+}
+
+.retry-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.retry-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.retry-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.retry-btn {
+  padding: var(--spacing-sm) var(--spacing-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-primary-blue);
+  background-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.retry-btn:hover {
+  background-color: var(--color-primary-blue-dark);
+  border-color: var(--color-primary-blue-dark);
+}
+
+.retry-btn.secondary {
+  background-color: transparent;
+  color: var(--color-primary-blue);
+}
+
+.retry-btn.secondary:hover {
+  background-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+}
+
+/* ========================================
+   QUEUE MANAGEMENT
+   ======================================== */
+
+.sync-queue-panel {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 350px;
+  height: 100vh;
+  background-color: var(--color-background-white);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-index-modal);
+  transition: right var(--transition-base);
+  overflow-y: auto;
+}
+
+.sync-queue-panel.open {
+  right: 0;
+}
+
+.sync-queue-header {
+  background-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+  padding: var(--spacing-base) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sync-queue-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.sync-queue-close {
+  background: none;
+  border: none;
+  color: var(--color-text-white);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-base);
+  transition: background-color var(--transition-fast);
+}
+
+.sync-queue-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sync-queue-body {
+  padding: var(--spacing-lg);
+}
+
+.sync-queue-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-base);
+  padding: var(--spacing-base);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-base);
+  margin-bottom: var(--spacing-sm);
+}
+
+.sync-queue-item-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.sync-queue-item-icon.pending {
+  color: var(--color-accent-orange);
+}
+
+.sync-queue-item-icon.syncing {
+  color: var(--color-primary-blue);
+  animation: spin 1s linear infinite;
+}
+
+.sync-queue-item-icon.success {
+  color: var(--color-success-green);
+}
+
+.sync-queue-item-icon.error {
+  color: var(--color-alert-red);
+}
+
+.sync-queue-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sync-queue-item-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sync-queue-item-details {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sync-queue-item-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.sync-queue-item-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-queue-item-btn:hover {
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 767px) {
+  .sync-queue-panel {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .offline-indicator {
+    bottom: 60px; /* Adjust for mobile bottom nav */
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+  
+  .retry-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .retry-actions {
+    justify-content: center;
+    margin-top: var(--spacing-sm);
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .connection-dot,
+  .sync-status-icon.syncing,
+  .data-sync-icon.syncing,
+  .auto-save-icon.saving,
+  .sync-queue-item-icon.syncing {
+    animation: none;
+  }
+  
+  .connection-status,
+  .offline-indicator,
+  .sync-queue-panel {
+    transition: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .connection-status,
+  .offline-indicator,
+  .retry-banner {
+    border-width: 2px;
+  }
+  
+  .data-sync-indicator,
+  .offline-storage-indicator {
+    border: 1px solid currentColor;
+  }
+}

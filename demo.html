@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHASA Design System Demo - Wound Care App</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Demo-specific styles */
+        .demo-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            background-color: var(--color-background-white);
+        }
+        
+        .demo-title {
+            color: var(--color-primary-blue);
+            border-bottom: 2px solid var(--color-primary-blue);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-grid.two-cols {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .demo-grid.three-cols {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .demo-item {
+            padding: 1rem;
+            background-color: var(--color-background-light);
+            border-radius: var(--border-radius-base);
+            border: 1px solid var(--color-border-light);
+        }
+        
+        .color-swatch {
+            width: 100%;
+            height: 60px;
+            border-radius: var(--border-radius-base);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-sm);
+        }
+        
+        .nav-demo {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 2rem;
+        }
+        
+        .toc {
+            background-color: var(--color-background-white);
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 2rem;
+            border: 1px solid var(--color-border-light);
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc a {
+            text-decoration: none;
+            color: var(--color-primary-blue);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Links -->
+    <div class="skip-links">
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        <a href="#navigation" class="skip-link">Skip to navigation</a>
+    </div>
+
+    <!-- Demo Navigation -->
+    <nav class="navbar nav-demo" id="navigation">
+        <a href="#" class="navbar-brand">WHASA Design System</a>
+        <div class="header-connection-indicator">
+            <div class="connection-dot"></div>
+            <span>Online</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container">
+        <div class="page-header">
+            <h1 class="page-title">WHASA Wound Care Design System</h1>
+            <p class="page-subtitle">Interactive demo showcasing clinical interface components</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>Demo Sections</h2>
+            <ul>
+                <li><a href="#colors">Color System</a></li>
+                <li><a href="#typography">Typography</a></li>
+                <li><a href="#buttons">Buttons</a></li>
+                <li><a href="#forms">Forms</a></li>
+                <li><a href="#cards">Cards</a></li>
+                <li><a href="#alerts">Alerts</a></li>
+                <li><a href="#workflow">Clinical Workflow</a></li>
+                <li><a href="#assessment">Assessment Components</a></li>
+                <li><a href="#photo-capture">Photo Capture</a></li>
+                <li><a href="#measurements">Measurement Tools</a></li>
+                <li><a href="#offline-sync">Offline & Sync</a></li>
+                <li><a href="#layouts">Layout Examples</a></li>
+            </ul>
+        </div>
+
+        <!-- Color System -->
+        <section id="colors" class="demo-section">
+            <h2 class="demo-title">Color System</h2>
+            <p>Healthcare-focused color palette designed for clinical environments with high contrast and accessibility.</p>
+            
+            <h3>Primary Colors</h3>
+            <div class="demo-grid three-cols">
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #2F6C9B;">#2F6C9B</div>
+                    <strong>Primary Blue</strong><br>
+                    <small>Trust, professionalism</small>
+                </div>
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #2B8363;">#2B8363</div>
+                    <strong>Secondary Teal</strong><br>
+                    <small>Health, balance</small>
+                </div>
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #F7F7F7; color: #333;">#F7F7F7</div>
+                    <strong>Light Background</strong><br>
+                    <small>Clean, sterile</small>
+                </div>
+            </div>
+
+            <h3>Clinical Alert Colors</h3>
+            <div class="demo-grid three-cols">
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #D9534F;">#D9534F</div>
+                    <strong>Alert Red</strong><br>
+                    <small>Critical, urgent</small>
+                </div>
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #F28C38;">#F28C38</div>
+                    <strong>Warning Orange</strong><br>
+                    <small>Attention, action</small>
+                </div>
+                <div class="demo-item">
+                    <div class="color-swatch" style="background-color: #4BB543;">#4BB543</div>
+                    <strong>Success Green</strong><br>
+                    <small>Healing, positive</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography -->
+        <section id="typography" class="demo-section">
+            <h2 class="demo-title">Typography</h2>
+            <p>Clear, readable typography optimized for clinical documentation and mobile devices.</p>
+            
+            <div class="demo-grid two-cols">
+                <div class="demo-item">
+                    <h3>Headings</h3>
+                    <h1 style="margin: 0.5rem 0;">H1 - Page Title</h1>
+                    <h2 style="margin: 0.5rem 0;">H2 - Section Header</h2>
+                    <h3 style="margin: 0.5rem 0;">H3 - Subsection</h3>
+                    <h4 style="margin: 0.5rem 0;">H4 - Component Title</h4>
+                </div>
+                <div class="demo-item">
+                    <h3>Body Text</h3>
+                    <p style="font-size: var(--font-size-base);">Base text (16px) - Main content</p>
+                    <p style="font-size: var(--font-size-lg);">Large text (20px) - Emphasis</p>
+                    <p style="font-size: var(--font-size-sm);">Small text (14px) - Labels</p>
+                    <p style="font-size: var(--font-size-xs);">Extra small (12px) - Captions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buttons -->
+        <section id="buttons" class="demo-section">
+            <h2 class="demo-title">Button Components</h2>
+            <p>Touch-friendly buttons designed for clinical environments, including emergency scenarios.</p>
+            
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h4>Button Variants</h4>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-warning">Warning</button>
+                        <button class="btn btn-danger">Danger</button>
+                        <button class="btn btn-outline">Outline</button>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Button Sizes</h4>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary btn-sm">Small</button>
+                        <button class="btn btn-primary">Default</button>
+                        <button class="btn btn-primary btn-lg">Large</button>
+                        <button class="btn btn-primary btn-xl">Extra Large</button>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Clinical Actions</h4>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-danger btn-lg">🚨 Emergency</button>
+                        <button class="btn btn-success">✓ Save Assessment</button>
+                        <button class="btn btn-warning">⚠ Alert Physician</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forms -->
+        <section id="forms" class="demo-section">
+            <h2 class="demo-title">Form Components</h2>
+            <p>Accessible form controls optimized for clinical data entry.</p>
+            
+            <div class="demo-grid two-cols">
+                <div class="demo-item">
+                    <h4>Basic Form Elements</h4>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label required" for="patient-id">Patient ID</label>
+                            <input type="text" class="form-control" id="patient-id" placeholder="Enter patient ID">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="wound-type">Wound Type</label>
+                            <select class="form-control form-select" id="wound-type">
+                                <option value="">Select wound type</option>
+                                <option value="venous">Venous Leg Ulcer</option>
+                                <option value="arterial">Arterial Ulcer</option>
+                                <option value="diabetic">Diabetic Foot Ulcer</option>
+                                <option value="pressure">Pressure Injury</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="notes">Clinical Notes</label>
+                            <textarea class="form-control" id="notes" rows="3" placeholder="Enter assessment notes"></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Validation States</h4>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label" for="valid-input">Valid Input</label>
+                            <input type="text" class="form-control is-valid" id="valid-input" value="John Doe">
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required" for="invalid-input">Invalid Input</label>
+                            <input type="text" class="form-control is-invalid" id="invalid-input">
+                            <div class="invalid-feedback">This field is required</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <fieldset>
+                                <legend style="font-size: 1rem; margin-bottom: 0.5rem;">Comorbidities</legend>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="diabetes">
+                                    <label class="form-check-label" for="diabetes">Diabetes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="hypertension" checked>
+                                    <label class="form-check-label" for="hypertension">Hypertension</label>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards -->
+        <section id="cards" class="demo-section">
+            <h2 class="demo-title">Card Components</h2>
+            <p>Structured content containers for clinical information.</p>
+            
+            <div class="demo-grid two-cols">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Patient Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-subtitle">ID: 12345 • Age: 67 • Male</p>
+                        <p class="card-text">Primary diagnosis: Venous leg ulcer, left leg. Patient presents with chronic wound for 6 weeks duration.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary btn-sm">View Details</button>
+                        <button class="btn btn-secondary btn-sm">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="card card-assessment">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Assessment</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="demo-grid">
+                            <div>
+                                <strong>ABPI:</strong> 0.85 (Normal)<br>
+                                <strong>Pain Level:</strong> 3/10<br>
+                                <strong>Wound Size:</strong> 4.2 x 3.1 cm
+                            </div>
+                            <div>
+                                <strong>Last Visit:</strong> 3 days ago<br>
+                                <strong>Next Due:</strong> Tomorrow<br>
+                                <strong>Status:</strong> <span class="badge badge-warning">Monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts -->
+        <section id="alerts" class="demo-section">
+            <h2 class="demo-title">Alert Components</h2>
+            <p>Clinical alerts and notifications for important medical information.</p>
+            
+            <div class="alert alert-danger" role="alert">
+                <strong>Critical ABPI Alert!</strong> ABPI value of 0.4 detected. Immediate vascular consultation required. Do not apply compression therapy.
+            </div>
+            
+            <div class="alert alert-warning" role="alert">
+                <strong>Infection Warning!</strong> Wound showing signs of infection (increased exudate, erythema, odor). Consider antibiotic therapy.
+            </div>
+            
+            <div class="alert alert-success" role="alert">
+                <strong>Assessment Complete!</strong> Patient data has been saved successfully and synced to cloud storage.
+            </div>
+            
+            <div class="alert alert-info" role="alert">
+                <strong>Reminder:</strong> Next dressing change scheduled for tomorrow at 10:00 AM. Patient education materials provided.
+            </div>
+        </section>
+
+        <!-- Clinical Workflow -->
+        <section id="workflow" class="demo-section">
+            <h2 class="demo-title">Clinical Workflow Progress</h2>
+            <p>Visual progress indicator for clinical workflows from registration to healing.</p>
+            
+            <div class="workflow-progress">
+                <div class="workflow-step completed">
+                    <div class="workflow-step-icon">✓</div>
+                    <div class="workflow-step-label">Registration</div>
+                </div>
+                <div class="workflow-step completed">
+                    <div class="workflow-step-icon">✓</div>
+                    <div class="workflow-step-label">Assessment</div>
+                </div>
+                <div class="workflow-step active">
+                    <div class="workflow-step-icon">3</div>
+                    <div class="workflow-step-label">Planning</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">4</div>
+                    <div class="workflow-step-label">Therapy</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">5</div>
+                    <div class="workflow-step-label">Follow-up</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-step-icon">6</div>
+                    <div class="workflow-step-label">Healed</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assessment Components -->
+        <section id="assessment" class="demo-section">
+            <h2 class="demo-title">Assessment Components</h2>
+            <p>Specialized components for clinical wound assessment.</p>
+            
+            <!-- Patient Card -->
+            <div class="patient-card" style="margin-bottom: 2rem;">
+                <div class="patient-card-header">
+                    <div class="patient-avatar">JD</div>
+                    <div class="patient-info">
+                        <h3>John Doe</h3>
+                        <p>ID: 12345 • Age: 67 • Male</p>
+                    </div>
+                </div>
+                <div class="patient-card-body">
+                    <div class="patient-details">
+                        <div class="patient-detail-item">
+                            <div class="patient-detail-label">Primary Condition</div>
+                            <div class="patient-detail-value">Venous Leg Ulcer</div>
+                        </div>
+                        <div class="patient-detail-item">
+                            <div class="patient-detail-label">Duration</div>
+                            <div class="patient-detail-value">6 weeks</div>
+                        </div>
+                        <div class="patient-detail-item">
+                            <div class="patient-detail-label">Last ABPI</div>
+                            <div class="patient-detail-value">0.85</div>
+                        </div>
+                        <div class="patient-detail-item">
+                            <div class="patient-detail-label">Risk Level</div>
+                            <div class="patient-detail-value">
+                                <span class="priority-medium">Medium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pain Scale -->
+            <div class="scale-rating">
+                <div class="scale-header">
+                    <h4 class="scale-title">Pain Assessment</h4>
+                    <p class="scale-description">Rate current pain level from 0 (no pain) to 10 (worst possible pain)</p>
+                </div>
+                
+                <div class="pain-scale">
+                    <div class="pain-scale-number" data-value="0">0</div>
+                    <div class="pain-scale-number" data-value="1">1</div>
+                    <div class="pain-scale-number" data-value="2">2</div>
+                    <div class="pain-scale-number selected" data-value="3">3</div>
+                    <div class="pain-scale-number" data-value="4">4</div>
+                    <div class="pain-scale-number" data-value="5">5</div>
+                    <div class="pain-scale-number" data-value="6">6</div>
+                    <div class="pain-scale-number" data-value="7">7</div>
+                    <div class="pain-scale-number" data-value="8">8</div>
+                    <div class="pain-scale-number" data-value="9">9</div>
+                    <div class="pain-scale-number" data-value="10">10</div>
+                </div>
+                
+                <div class="pain-scale-labels">
+                    <span class="pain-scale-label">No Pain</span>
+                    <span class="pain-scale-label">Worst Pain</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Capture -->
+        <section id="photo-capture" class="demo-section">
+            <h2 class="demo-title">Photo Capture Interface</h2>
+            <p>Touch-friendly photo capture and management for wound documentation.</p>
+            
+            <div class="photo-capture-area" tabindex="0">
+                <div class="photo-capture-icon">📷</div>
+                <p class="photo-capture-text">Tap to capture wound photo</p>
+                <p class="photo-capture-subtext">Or drag and drop image here</p>
+            </div>
+            
+            <div class="photo-preview-grid" style="margin-top: 1rem;">
+                <div class="photo-preview-item">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #f0f0f0, #e0e0e0); display: flex; align-items: center; justify-content: center; color: #666;">
+                        📷 Photo 1
+                    </div>
+                    <div class="photo-preview-overlay">
+                        <div class="photo-preview-actions">
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="photo-preview-item">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #f0f0f0, #e0e0e0); display: flex; align-items: center; justify-content: center; color: #666;">
+                        📷 Photo 2
+                    </div>
+                    <div class="photo-preview-overlay">
+                        <div class="photo-preview-actions">
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Measurements -->
+        <section id="measurements" class="demo-section">
+            <h2 class="demo-title">Measurement Tools</h2>
+            <p>Precise measurement tools for wound dimensions and clinical data.</p>
+            
+            <div class="measurement-tool">
+                <h4>Wound Dimensions</h4>
+                <div class="measurement-grid">
+                    <div class="measurement-input-group">
+                        <label class="form-label">Length</label>
+                        <input type="number" class="measurement-input" value="4.2" step="0.1">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                    <div class="measurement-input-group">
+                        <label class="form-label">Width</label>
+                        <input type="number" class="measurement-input" value="3.1" step="0.1">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                    <div class="measurement-input-group">
+                        <label class="form-label">Depth</label>
+                        <input type="number" class="measurement-input" value="1.8" step="0.1">
+                        <span class="measurement-unit">cm</span>
+                    </div>
+                </div>
+                
+                <div class="volume-calculator">
+                    <div class="calculated-volume">2.4 cm³</div>
+                    <div class="volume-formula">L × W × D × 0.327</div>
+                </div>
+            </div>
+
+            <!-- Clinical Measurements -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                <div class="measurement-display">
+                    <div class="measurement-value">0.85</div>
+                    <div class="measurement-unit">ABPI</div>
+                    <div class="measurement-label">Left Ankle</div>
+                </div>
+                <div class="measurement-display">
+                    <div class="measurement-value">3</div>
+                    <div class="measurement-unit">Pain</div>
+                    <div class="measurement-label">Scale 0-10</div>
+                </div>
+                <div class="measurement-display">
+                    <div class="measurement-value">36.5</div>
+                    <div class="measurement-unit">°C</div>
+                    <div class="measurement-label">Temperature</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Offline & Sync -->
+        <section id="offline-sync" class="demo-section">
+            <h2 class="demo-title">Offline & Sync States</h2>
+            <p>Clear feedback for connectivity status and data synchronization.</p>
+            
+            <div class="demo-grid two-cols">
+                <div class="demo-item">
+                    <h4>Connection Status</h4>
+                    <div style="margin-bottom: 1rem;">
+                        <div class="connection-status online show">
+                            ✓ Connected - Data syncing automatically
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <div class="connection-status offline show">
+                            ⚠ Offline Mode - Data saved locally
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <div class="connection-status reconnecting show">
+                            🔄 Reconnecting - Please wait
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Data Sync States</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="data-sync-indicator pending">
+                            <div class="data-sync-icon">⏳</div>
+                            <span>Pending sync</span>
+                        </div>
+                        <div class="data-sync-indicator syncing">
+                            <div class="data-sync-icon syncing">🔄</div>
+                            <span>Syncing...</span>
+                        </div>
+                        <div class="data-sync-indicator synced">
+                            <div class="data-sync-icon">✓</div>
+                            <span>Synced</span>
+                        </div>
+                        <div class="data-sync-indicator error">
+                            <div class="data-sync-icon">✗</div>
+                            <span>Sync failed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-save indicator -->
+            <div class="auto-save-indicator saved" style="margin-top: 1rem;">
+                <div class="auto-save-icon">💾</div>
+                <span>All changes saved automatically</span>
+            </div>
+        </section>
+
+        <!-- Layout Examples -->
+        <section id="layouts" class="demo-section">
+            <h2 class="demo-title">Layout Examples</h2>
+            <p>Responsive layout patterns for clinical workflows.</p>
+            
+            <!-- Quick Actions Grid -->
+            <h4>Dashboard Quick Actions</h4>
+            <div class="quick-actions-grid" style="margin-bottom: 2rem;">
+                <a href="#" class="quick-action-card">
+                    <div class="quick-action-icon">📝</div>
+                    <h3 class="quick-action-title">New Assessment</h3>
+                    <p class="quick-action-description">Start wound assessment for existing patient</p>
+                </a>
+                <a href="#" class="quick-action-card">
+                    <div class="quick-action-icon">📷</div>
+                    <h3 class="quick-action-title">Photo Capture</h3>
+                    <p class="quick-action-description">Take wound progression photos</p>
+                </a>
+                <a href="#" class="quick-action-card">
+                    <div class="quick-action-icon">📊</div>
+                    <h3 class="quick-action-title">View Reports</h3>
+                    <p class="quick-action-description">Generate patient progress reports</p>
+                </a>
+            </div>
+
+            <!-- Stats Grid -->
+            <h4>Clinical Statistics</h4>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Active Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Due Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Critical ABPI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Healed This Month</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation Demo -->
+        <nav class="bottom-nav">
+            <a href="#" class="bottom-nav-item active">
+                <div class="bottom-nav-icon">🏠</div>
+                <span class="bottom-nav-label">Dashboard</span>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">👥</div>
+                <span class="bottom-nav-label">Patients</span>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">📷</div>
+                <span class="bottom-nav-label">Capture</span>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">📊</div>
+                <span class="bottom-nav-label">Reports</span>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">⚙️</div>
+                <span class="bottom-nav-label">Settings</span>
+            </a>
+        </nav>
+    </main>
+
+    <!-- Demo JavaScript -->
+    <script>
+        // Pain scale interaction
+        document.querySelectorAll('.pain-scale-number').forEach(number => {
+            number.addEventListener('click', function() {
+                document.querySelectorAll('.pain-scale-number').forEach(n => n.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Photo capture simulation
+        document.querySelector('.photo-capture-area').addEventListener('click', function() {
+            alert('Photo capture would be triggered here in the actual app');
+        });
+
+        // Form validation demo
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                } else {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        // Connection status simulation
+        let isOnline = true;
+        setInterval(() => {
+            const indicator = document.querySelector('.connection-dot');
+            const text = document.querySelector('.header-connection-indicator span');
+            
+            if (Math.random() < 0.1) { // 10% chance to change status
+                isOnline = !isOnline;
+                if (isOnline) {
+                    indicator.classList.remove('offline');
+                    text.textContent = 'Online';
+                } else {
+                    indicator.classList.add('offline');
+                    text.textContent = 'Offline';
+                }
+            }
+        }, 2000);
+
+        // Smooth scrolling for TOC links
+        document.querySelectorAll('.toc a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Measurement calculator
+        document.querySelectorAll('.measurement-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const container = this.closest('.measurement-tool');
+                const inputs = container.querySelectorAll('.measurement-input');
+                const volumeDisplay = container.querySelector('.calculated-volume');
+                
+                if (inputs.length >= 3 && volumeDisplay) {
+                    const length = parseFloat(inputs[0].value) || 0;
+                    const width = parseFloat(inputs[1].value) || 0;
+                    const depth = parseFloat(inputs[2].value) || 0;
+                    const volume = (length * width * depth * 0.327).toFixed(1);
+                    volumeDisplay.textContent = volume + ' cm³';
+                }
+            });
+        });
+
+        console.log('WHASA Design System Demo loaded successfully');
+    </script>
+</body>
+</html>

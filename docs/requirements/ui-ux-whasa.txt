@@ -1,0 +1,99 @@
+Below is a researched set of UI/UX and color‑scheme recommendations tailored to the wound‑care nurse practitioner app. These guidelines are grounded in general healthcare‑design principles and color‑psychology research to ensure the interface is not only aesthetically pleasing but also accessible, trustworthy and appropriate for clinical use.
+
+UI/UX Principles
+Accessibility First
+
+High contrast text and backgrounds: Ensure all text meets or exceeds the WCAG minimum contrast ratios (4.5:1 for normal text and 3:1 for large/bold text) so that critical information remains readable for users with low vision
+concretecms.com
+.
+
+Legible fonts: Use clean sans‑serif typefaces such as Inter, Helvetica or Roboto; avoid decorative fonts. Maintain consistent kerning and line spacing to improve readability
+diversido.io
+.
+
+Visible buttons and clear labels: Buttons should stand out from the background and use descriptive text (e.g., “Save Assessment,” not “Press here”)
+diversido.io
+.
+
+Intuitive icons: Use universally understood symbols to complement or replace text; avoid generic stock photos that add no value
+diversido.io
+.
+
+Simple, Consistent Layouts
+
+Follow a linear flow that mirrors the clinical process (Registration → Assessment → Plan → Therapy → Follow‑up → Healed).
+
+Use consistent spacing, alignment, and navigation patterns across modules to reduce cognitive load.
+
+Provide immediate feedback for user actions (e.g., loading indicators or confirmation messages).
+
+Photo Capture and Measurement Tools
+
+Integrate camera functionality with built‑in guides for framing wounds and on‑screen rulers for length/width/depth measurements.
+
+Offer simple annotation tools (arrows, circles, text) to highlight areas of concern.
+
+Offline Capable and Sync Feedback
+
+Indicate offline status clearly and show when data is queued for synchronization.
+
+Prevent data loss by autosaving progress during assessments and treatments.
+
+Color Scheme Recommendations
+Based on color psychology research, cool tones like blue and green convey calmness, trust and health
+uxmatters.com
+. These colors are widely used in healthcare to create a reassuring environment but should be complemented with neutrals and carefully chosen accent colors for contrast and emphasis.
+
+Base Palette
+
+Mid‑tone Blue (#2F6C9B) – evokes calmness, trust and professionalism; suitable for primary buttons and navigation bars
+uxmatters.com
+.
+
+Soft Teal/Green (#2B8363) – represents health and balance; ideal for secondary actions and progress indicators.
+
+Warm Light Gray (#F7F7F7 or #EFEFEF) – off‑white background to reduce eye strain and avoid clinical sterility while maintaining a clean look
+diversido.io
+.
+
+Accent Colors
+
+Vibrant Orange (#F28C38) – conveys friendliness and draws attention; use sparingly for calls to action, such as “New Assessment” or “Confirm Plan.”
+
+Alert Red (#D9534F) – reserved for warnings or critical notifications (e.g., “ABPI too low – refer patient”) to attract immediate attention
+diversido.io
+.
+
+Success Green (#4BB543) – signals successful actions (e.g., “Data synced,” “Wound improved”) and positive states
+diversido.io
+.
+
+Contrast and Accessibility
+
+Ensure primary text is dark (e.g., #1A1A1A) on light backgrounds or light (#FFFFFF) on dark backgrounds, maintaining the recommended contrast ratio
+concretecms.com
+.
+
+For color-blind users, avoid relying solely on red/green distinctions; pair color cues with icons or labels
+uxmatters.com
+.
+
+Dark Mode (Optional)
+
+Provide an alternative dark theme with dark gray (#1E1E1E) backgrounds and light text, using the same accent colors. Maintain high contrast and limit pure black (#000000) to reduce eye fatigue.
+
+Examples of Usage
+Navigation Bar: Mid‑tone blue background with white text/icons. Active tab highlighted using a lighter shade or underline.
+
+Primary Buttons: Blue fill (#2F6C9B) with white text. Hover/pressed states use a slightly darker shade for feedback.
+
+Secondary Buttons: Teal outline and text on light background; fill the teal for the active state.
+
+Warning/Alerts: Red badge or banner with white text; accompanied by an exclamation‑mark icon for clarity.
+
+Data Cards: Use light gray or white cards on a slightly darker backdrop (#F7F7F7), with colored accents (blue or teal) on the left border to indicate the section (e.g., assessment vs. therapy).
+
+Summary
+For this wound‑care app, the UI should prioritize clarity, accessibility and calmness. A palette anchored in blues and greens with warm gray backgrounds conveys trust and health, while orange and red accents draw attention to key actions and warnings. Consistency in style, typography and spacing helps users navigate complex clinical workflows with confidence. Adhering to WCAG contrast guidelines ensures that vital patient information remains accessible to all users, including those with color vision deficiencies
+concretecms.com
+.

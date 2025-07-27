@@ -1,0 +1,2115 @@
+openapi: 3.0.3
+info:
+  title: WHASA Wound-Care Application API
+  description: |
+    Comprehensive API specification for the WHASA (Wound Healing Association of Southern Africa) 
+    wound-care nurse practitioner mobile application. This API supports offline-first mobile 
+    operation, clinical workflows, device integration, and POPIA compliance.
+  version: 1.0.0
+  contact:
+    name: WHASA Development Team
+    email: tech@whasa.org
+  license:
+    name: Proprietary
+    url: https://whasa.org/license
+
+servers:
+  - url: https://api.whasa.org/v1
+    description: Production server
+  - url: https://staging-api.whasa.org/v1
+    description: Staging server
+  - url: https://dev-api.whasa.org/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Patients
+    description: Patient management and demographics
+  - name: Wounds
+    description: Wound registry and management
+  - name: Assessments
+    description: Clinical assessments and T.I.M.E. framework
+  - name: Care Plans
+    description: Treatment planning and care coordination
+  - name: Therapy Sessions
+    description: Treatment execution and documentation
+  - name: Images
+    description: Wound image management and metadata
+  - name: Inventory
+    description: Supply management and stock tracking
+  - name: Devices
+    description: Medical device integration
+  - name: Notifications
+    description: Alert and notification management
+  - name: Sync
+    description: Offline synchronization support
+  - name: Reports
+    description: Clinical and operational reporting
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user credentials and return access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidate current session and access token
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Obtain new access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Patient Management Endpoints
+  /patients:
+    get:
+      tags:
+        - Patients
+      summary: List patients
+      description: Retrieve paginated list of patients with optional filtering
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: search
+          in: query
+          description: Search by name, ID number, or patient number
+          schema:
+            type: string
+        - name: facility_id
+          in: query
+          description: Filter by facility
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by patient status
+          schema:
+            $ref: '#/components/schemas/PatientStatus'
+      responses:
+        '200':
+          description: List of patients retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - Patients
+      summary: Create new patient
+      description: Register a new patient with demographic and clinical information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreateRequest'
+      responses:
+        '201':
+          description: Patient created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /patients/{patient_id}:
+    get:
+      tags:
+        - Patients
+      summary: Get patient details
+      description: Retrieve detailed patient information including medical history
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Patient details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Patients
+      summary: Update patient
+      description: Update patient demographics and clinical information
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientUpdateRequest'
+      responses:
+        '200':
+          description: Patient updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Wound Management Endpoints
+  /patients/{patient_id}/wounds:
+    get:
+      tags:
+        - Wounds
+      summary: List patient wounds
+      description: Retrieve all wounds for a specific patient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: status
+          in: query
+          description: Filter by wound status
+          schema:
+            $ref: '#/components/schemas/WoundStatus'
+      responses:
+        '200':
+          description: Wounds retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Wounds
+      summary: Create new wound
+      description: Register a new wound for a patient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WoundCreateRequest'
+      responses:
+        '201':
+          description: Wound created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /wounds/{wound_id}:
+    get:
+      tags:
+        - Wounds
+      summary: Get wound details
+      description: Retrieve detailed wound information including assessments
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+      responses:
+        '200':
+          description: Wound details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WoundDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Assessment Endpoints
+  /wounds/{wound_id}/assessments/time:
+    post:
+      tags:
+        - Assessments
+      summary: Create T.I.M.E. assessment
+      description: Document a new T.I.M.E. framework assessment for a wound
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeAssessmentRequest'
+      responses:
+        '201':
+          description: T.I.M.E. assessment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeAssessment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /patients/{patient_id}/assessments/abpi:
+    post:
+      tags:
+        - Assessments
+      summary: Create ABPI measurement
+      description: Record ankle-brachial pressure index measurements
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbpiMeasurementRequest'
+      responses:
+        '201':
+          description: ABPI measurement created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbpiMeasurement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Care Plan Endpoints
+  /wounds/{wound_id}/care-plans:
+    get:
+      tags:
+        - Care Plans
+      summary: List wound care plans
+      description: Retrieve all care plans for a specific wound
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+      responses:
+        '200':
+          description: Care plans retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CarePlan'
+
+    post:
+      tags:
+        - Care Plans
+      summary: Create care plan
+      description: Create a new individualized care plan
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarePlanRequest'
+      responses:
+        '201':
+          description: Care plan created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarePlan'
+
+  # Therapy Session Endpoints
+  /wounds/{wound_id}/therapy-sessions:
+    get:
+      tags:
+        - Therapy Sessions
+      summary: List therapy sessions
+      description: Retrieve therapy sessions for a wound
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+        - name: session_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/TherapyType'
+      responses:
+        '200':
+          description: Therapy sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TherapySession'
+
+    post:
+      tags:
+        - Therapy Sessions
+      summary: Create therapy session
+      description: Document a new therapy session
+      parameters:
+        - $ref: '#/components/parameters/WoundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TherapySessionRequest'
+      responses:
+        '201':
+          description: Therapy session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TherapySession'
+
+  # Image Management Endpoints
+  /images/upload:
+    post:
+      tags:
+        - Images
+      summary: Upload wound image
+      description: Upload and process wound photograph with metadata
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageUploadRequest'
+      responses:
+        '201':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WoundImage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          description: File too large
+
+  /images/{image_id}:
+    get:
+      tags:
+        - Images
+      summary: Get image details
+      description: Retrieve image metadata and download URL
+      parameters:
+        - $ref: '#/components/parameters/ImageId'
+      responses:
+        '200':
+          description: Image details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WoundImage'
+
+  # Inventory Management Endpoints
+  /inventory/products:
+    get:
+      tags:
+        - Inventory
+      summary: List products
+      description: Retrieve product catalog with filtering options
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: '#/components/schemas/WbpCategory'
+        - name: product_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/ProductType'
+        - name: active_only
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /inventory/stock:
+    get:
+      tags:
+        - Inventory
+      summary: Check stock levels
+      description: Retrieve current stock levels for products
+      parameters:
+        - name: location_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: low_stock_only
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Stock levels retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryStock'
+
+  /inventory/barcode-scan:
+    post:
+      tags:
+        - Inventory
+      summary: Process barcode scan
+      description: Process scanned barcode and update inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarcodeScanRequest'
+      responses:
+        '200':
+          description: Barcode processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BarcodeScanResponse'
+
+  # Device Integration Endpoints
+  /devices:
+    get:
+      tags:
+        - Devices
+      summary: List registered devices
+      description: Retrieve list of registered medical devices
+      responses:
+        '200':
+          description: Devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MedicalDevice'
+
+  /devices/{device_id}/data:
+    post:
+      tags:
+        - Devices
+      summary: Submit device data
+      description: Submit data from medical device (e.g., NPWT pump)
+      parameters:
+        - $ref: '#/components/parameters/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDataSubmission'
+      responses:
+        '201':
+          description: Device data submitted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Notification Endpoints
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get user notifications
+      description: Retrieve notifications for the current user
+      parameters:
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/NotificationType'
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /notifications/{notification_id}/acknowledge:
+    put:
+      tags:
+        - Notifications
+      summary: Acknowledge notification
+      description: Mark notification as acknowledged
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Notification acknowledged successfully
+
+  # Synchronization Endpoints
+  /sync/session:
+    post:
+      tags:
+        - Sync
+      summary: Start sync session
+      description: Initialize offline data synchronization session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncSessionRequest'
+      responses:
+        '201':
+          description: Sync session started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncSession'
+
+  /sync/changes:
+    post:
+      tags:
+        - Sync
+      summary: Submit offline changes
+      description: Submit changes made while offline for synchronization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncChangesRequest'
+      responses:
+        '200':
+          description: Changes synchronized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncChangesResponse'
+
+  # Reporting Endpoints
+  /reports/healing-progress:
+    get:
+      tags:
+        - Reports
+      summary: Healing progress report
+      description: Generate healing progress analytics
+      parameters:
+        - name: patient_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: wound_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/WoundType'
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealingProgressReport'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    PatientId:
+      name: patient_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique patient identifier
+
+    WoundId:
+      name: wound_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique wound identifier
+
+    ImageId:
+      name: image_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique image identifier
+
+    DeviceId:
+      name: device_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique device identifier
+
+    NotificationId:
+      name: notification_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Unique notification identifier
+
+  schemas:
+    # Authentication Schemas
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: nurse@clinic.co.za
+        password:
+          type: string
+          format: password
+          minLength: 8
+        two_factor_code:
+          type: string
+          pattern: '^[0-9]{6}$'
+        device_identifier:
+          type: string
+          maxLength: 100
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: Refresh token for obtaining new access tokens
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+        user:
+          $ref: '#/components/schemas/User'
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+    # User Schemas
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        facility_id:
+          type: string
+          format: uuid
+        last_login_at:
+          type: string
+          format: date-time
+
+    UserRole:
+      type: string
+      enum:
+        - wound_specialist_nurse
+        - case_manager
+        - administrator
+        - patient
+        - other_clinician
+
+    # Patient Schemas
+    Patient:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        patient_number:
+          type: string
+        surname:
+          type: string
+        first_name:
+          type: string
+        other_names:
+          type: string
+        gender:
+          $ref: '#/components/schemas/Gender'
+        date_of_birth:
+          type: string
+          format: date
+        id_number:
+          type: string
+        phone_primary:
+          type: string
+        email:
+          type: string
+          format: email
+        medical_aid_scheme:
+          type: string
+        medical_aid_number:
+          type: string
+        status:
+          $ref: '#/components/schemas/PatientStatus'
+        facility_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    PatientDetail:
+      allOf:
+        - $ref: '#/components/schemas/Patient'
+        - type: object
+          properties:
+            address:
+              $ref: '#/components/schemas/Address'
+            emergency_contact:
+              $ref: '#/components/schemas/EmergencyContact'
+            medical_history:
+              type: array
+              items:
+                $ref: '#/components/schemas/MedicalHistory'
+            surgical_history:
+              type: array
+              items:
+                $ref: '#/components/schemas/SurgicalHistory'
+
+    PatientCreateRequest:
+      type: object
+      required:
+        - surname
+        - first_name
+        - gender
+        - date_of_birth
+        - facility_id
+      properties:
+        surname:
+          type: string
+          maxLength: 100
+        first_name:
+          type: string
+          maxLength: 100
+        other_names:
+          type: string
+          maxLength: 200
+        gender:
+          $ref: '#/components/schemas/Gender'
+        date_of_birth:
+          type: string
+          format: date
+        id_number:
+          type: string
+          maxLength: 20
+        phone_primary:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        facility_id:
+          type: string
+          format: uuid
+        medical_aid_scheme:
+          type: string
+        medical_aid_number:
+          type: string
+        consent_given:
+          type: boolean
+          default: false
+
+    PatientUpdateRequest:
+      type: object
+      properties:
+        surname:
+          type: string
+          maxLength: 100
+        first_name:
+          type: string
+          maxLength: 100
+        phone_primary:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        medical_aid_scheme:
+          type: string
+        medical_aid_number:
+          type: string
+        status:
+          $ref: '#/components/schemas/PatientStatus'
+
+    PatientListResponse:
+      type: object
+      properties:
+        patients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Patient'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    PatientStatus:
+      type: string
+      enum:
+        - active
+        - inactive
+        - deceased
+        - transferred
+
+    Gender:
+      type: string
+      enum:
+        - male
+        - female
+        - other
+        - not_specified
+
+    Address:
+      type: object
+      properties:
+        address_line1:
+          type: string
+        address_line2:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        postal_code:
+          type: string
+        country:
+          type: string
+          default: South Africa
+
+    EmergencyContact:
+      type: object
+      properties:
+        name:
+          type: string
+        relationship:
+          type: string
+        phone:
+          type: string
+
+    MedicalHistory:
+      type: object
+      properties:
+        history_id:
+          type: string
+          format: uuid
+        condition_type:
+          $ref: '#/components/schemas/MedicalCondition'
+        condition_description:
+          type: string
+        diagnosis_date:
+          type: string
+          format: date
+        severity:
+          type: string
+          enum: [mild, moderate, severe]
+        is_active:
+          type: boolean
+        medications:
+          type: string
+
+    SurgicalHistory:
+      type: object
+      properties:
+        surgery_id:
+          type: string
+          format: uuid
+        procedure_name:
+          type: string
+        surgery_date:
+          type: string
+          format: date
+        surgeon_name:
+          type: string
+        complications:
+          type: string
+
+    MedicalCondition:
+      type: string
+      enum:
+        - diabetes_type_1
+        - diabetes_type_2
+        - hypertension
+        - obesity
+        - autoimmune_disease
+        - cardiac_condition
+        - respiratory_condition
+        - lymphatic_alteration
+        - previous_amputation
+        - gait_changes
+        - radiation_exposure
+        - other
+
+    # Wound Schemas
+    Wound:
+      type: object
+      properties:
+        wound_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        wound_number:
+          type: string
+        wound_type:
+          $ref: '#/components/schemas/WoundType'
+        anatomical_location:
+          type: string
+        laterality:
+          type: string
+          enum: [left, right, bilateral, midline]
+        status:
+          $ref: '#/components/schemas/WoundStatus'
+        healability_classification:
+          $ref: '#/components/schemas/Healability'
+        onset_date:
+          type: string
+          format: date
+        length_cm:
+          type: number
+          format: float
+        width_cm:
+          type: number
+          format: float
+        depth_cm:
+          type: number
+          format: float
+        case_number:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    WoundDetail:
+      allOf:
+        - $ref: '#/components/schemas/Wound'
+        - type: object
+          properties:
+            latest_assessment:
+              $ref: '#/components/schemas/TimeAssessment'
+            active_care_plan:
+              $ref: '#/components/schemas/CarePlan'
+            recent_sessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/TherapySession'
+            images:
+              type: array
+              items:
+                $ref: '#/components/schemas/WoundImage'
+
+    WoundCreateRequest:
+      type: object
+      required:
+        - wound_type
+        - anatomical_location
+      properties:
+        wound_type:
+          $ref: '#/components/schemas/WoundType'
+        anatomical_location:
+          type: string
+        laterality:
+          type: string
+          enum: [left, right, bilateral, midline]
+        onset_date:
+          type: string
+          format: date
+        etiology:
+          type: string
+        contributing_factors:
+          type: string
+
+    WoundType:
+      type: string
+      enum:
+        - venous_ulcer
+        - arterial_ulcer
+        - mixed_ulcer
+        - diabetic_foot_ulcer
+        - pressure_injury
+        - skin_tear
+        - burn
+        - moisture_associated_skin_damage
+        - other
+
+    WoundStatus:
+      type: string
+      enum:
+        - open
+        - healing
+        - healed
+        - deteriorating
+        - maintenance
+        - non_healable
+
+    Healability:
+      type: string
+      enum:
+        - healable
+        - maintenance
+        - non_healable
+
+    # Assessment Schemas
+    TimeAssessment:
+      type: object
+      properties:
+        time_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        assessment_date:
+          type: string
+          format: date-time
+        tissue_type:
+          $ref: '#/components/schemas/TissueType'
+        tissue_percentage_viable:
+          type: integer
+          minimum: 0
+          maximum: 100
+        infection_indicator:
+          $ref: '#/components/schemas/InfectionIndicator'
+        moisture_level:
+          $ref: '#/components/schemas/MoistureLevel'
+        edge_type:
+          $ref: '#/components/schemas/EdgeType'
+        overall_improvement:
+          type: string
+          enum: [improving, static, deteriorating]
+        assessed_by:
+          type: string
+          format: uuid
+        notes:
+          type: string
+
+    TimeAssessmentRequest:
+      type: object
+      required:
+        - tissue_type
+        - infection_indicator
+        - moisture_level
+        - edge_type
+      properties:
+        tissue_type:
+          $ref: '#/components/schemas/TissueType'
+        tissue_percentage_viable:
+          type: integer
+          minimum: 0
+          maximum: 100
+        tissue_description:
+          type: string
+        infection_indicator:
+          $ref: '#/components/schemas/InfectionIndicator'
+        nerds_signs:
+          type: string
+        moisture_level:
+          $ref: '#/components/schemas/MoistureLevel'
+        exudate_amount:
+          type: string
+          enum: [none, minimal, moderate, heavy]
+        edge_type:
+          $ref: '#/components/schemas/EdgeType'
+        overall_improvement:
+          type: string
+          enum: [improving, static, deteriorating]
+        notes:
+          type: string
+
+    TissueType:
+      type: string
+      enum:
+        - viable_granulation
+        - viable_epithelial
+        - non_viable_necrotic
+        - non_viable_slough
+        - mixed
+
+    InfectionIndicator:
+      type: string
+      enum:
+        - none
+        - local_infection
+        - spreading_infection
+        - systemic_infection
+
+    MoistureLevel:
+      type: string
+      enum:
+        - dry
+        - moist
+        - wet
+        - heavily_exuding
+
+    EdgeType:
+      type: string
+      enum:
+        - advancing
+        - non_advancing
+        - undermined
+        - rolled
+        - callused
+
+    AbpiMeasurement:
+      type: object
+      properties:
+        abpi_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        assessment_date:
+          type: string
+          format: date-time
+        left_ankle_systolic:
+          type: integer
+        left_brachial_systolic:
+          type: integer
+        left_abpi:
+          type: number
+          format: float
+        right_ankle_systolic:
+          type: integer
+        right_brachial_systolic:
+          type: integer
+        right_abpi:
+          type: number
+          format: float
+        compression_recommendation:
+          type: string
+        referral_required:
+          type: boolean
+
+    AbpiMeasurementRequest:
+      type: object
+      required:
+        - left_ankle_systolic
+        - left_brachial_systolic
+        - right_ankle_systolic
+        - right_brachial_systolic
+      properties:
+        left_ankle_systolic:
+          type: integer
+          minimum: 50
+          maximum: 300
+        left_brachial_systolic:
+          type: integer
+          minimum: 50
+          maximum: 300
+        left_leg_circumference_cm:
+          type: number
+          format: float
+        right_ankle_systolic:
+          type: integer
+          minimum: 50
+          maximum: 300
+        right_brachial_systolic:
+          type: integer
+          minimum: 50
+          maximum: 300
+        right_leg_circumference_cm:
+          type: number
+          format: float
+        clinical_interpretation:
+          type: string
+
+    # Care Plan Schemas
+    CarePlan:
+      type: object
+      properties:
+        care_plan_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        plan_number:
+          type: string
+        plan_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/CarePlanStatus'
+        healability_assessment:
+          $ref: '#/components/schemas/Healability'
+        primary_objective:
+          $ref: '#/components/schemas/TreatmentObjective'
+        expected_healing_time_weeks:
+          type: integer
+        plan_start_date:
+          type: string
+          format: date
+        next_review_date:
+          type: string
+          format: date
+        created_by:
+          type: string
+          format: uuid
+        objectives:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarePlanObjective'
+
+    CarePlanRequest:
+      type: object
+      required:
+        - healability_assessment
+        - primary_objective
+        - plan_start_date
+      properties:
+        plan_name:
+          type: string
+        healability_assessment:
+          $ref: '#/components/schemas/Healability'
+        primary_objective:
+          $ref: '#/components/schemas/TreatmentObjective'
+        secondary_objectives:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreatmentObjective'
+        expected_healing_time_weeks:
+          type: integer
+        plan_start_date:
+          type: string
+          format: date
+        patient_priorities:
+          type: string
+        treatment_rationale:
+          type: string
+
+    CarePlanStatus:
+      type: string
+      enum:
+        - draft
+        - active
+        - completed
+        - discontinued
+        - modified
+
+    TreatmentObjective:
+      type: string
+      enum:
+        - reduce_edema
+        - control_infection
+        - manage_moisture
+        - protect_edges
+        - treat_pain
+        - address_systemic_factors
+        - promote_granulation
+        - facilitate_epithelialization
+        - debride_tissue
+        - compression_therapy
+        - off_loading
+        - patient_education
+
+    CarePlanObjective:
+      type: object
+      properties:
+        objective_id:
+          type: string
+          format: uuid
+        objective_type:
+          $ref: '#/components/schemas/TreatmentObjective'
+        objective_description:
+          type: string
+        target_outcome:
+          type: string
+        is_achieved:
+          type: boolean
+        achievement_date:
+          type: string
+          format: date-time
+
+    # Therapy Session Schemas
+    TherapySession:
+      type: object
+      properties:
+        session_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        session_type:
+          $ref: '#/components/schemas/TherapyType'
+        session_number:
+          type: integer
+        status:
+          $ref: '#/components/schemas/SessionStatus'
+        scheduled_date:
+          type: string
+          format: date-time
+        actual_start_time:
+          type: string
+          format: date-time
+        actual_end_time:
+          type: string
+          format: date-time
+        pre_session_pain_score:
+          type: integer
+          minimum: 0
+          maximum: 10
+        post_session_pain_score:
+          type: integer
+          minimum: 0
+          maximum: 10
+        session_notes:
+          type: string
+        primary_nurse:
+          type: string
+          format: uuid
+
+    TherapySessionRequest:
+      type: object
+      required:
+        - session_type
+        - scheduled_date
+      properties:
+        session_type:
+          $ref: '#/components/schemas/TherapyType'
+        scheduled_date:
+          type: string
+          format: date-time
+        care_plan_id:
+          type: string
+          format: uuid
+        pre_session_pain_score:
+          type: integer
+          minimum: 0
+          maximum: 10
+        session_notes:
+          type: string
+
+    TherapyType:
+      type: string
+      enum:
+        - npwt_application
+        - npwt_dressing_change
+        - conventional_dressing
+        - debridement
+        - compression_application
+        - wound_cleansing
+        - patient_education
+        - assessment_only
+
+    SessionStatus:
+      type: string
+      enum:
+        - scheduled
+        - in_progress
+        - completed
+        - cancelled
+        - no_show
+
+    # Image Schemas
+    WoundImage:
+      type: object
+      properties:
+        image_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+          format: uuid
+        image_category:
+          $ref: '#/components/schemas/ImageCategory'
+        image_filename:
+          type: string
+        file_size_bytes:
+          type: integer
+        width_pixels:
+          type: integer
+        height_pixels:
+          type: integer
+        capture_date:
+          type: string
+          format: date-time
+        clinical_notes:
+          type: string
+        download_url:
+          type: string
+          format: uri
+        thumbnail_url:
+          type: string
+          format: uri
+
+    ImageUploadRequest:
+      type: object
+      required:
+        - image_file
+        - patient_id
+        - image_category
+      properties:
+        image_file:
+          type: string
+          format: binary
+        patient_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        session_id:
+          type: string
+          format: uuid
+        image_category:
+          $ref: '#/components/schemas/ImageCategory'
+        clinical_notes:
+          type: string
+        annotations:
+          type: string
+          description: JSON string containing annotation data
+
+    ImageCategory:
+      type: string
+      enum:
+        - wound_assessment
+        - pre_therapy
+        - post_therapy
+        - healing_progress
+        - complications
+        - patient_education
+        - device_setup
+        - other
+
+    # Inventory Schemas
+    Product:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        product_name:
+          type: string
+        manufacturer:
+          type: string
+        product_code:
+          type: string
+        barcode:
+          type: string
+        wbp_category:
+          $ref: '#/components/schemas/WbpCategory'
+        product_type:
+          $ref: '#/components/schemas/ProductType'
+        unit_cost:
+          type: number
+          format: float
+        available_sizes:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+
+    WbpCategory:
+      type: string
+      enum:
+        - debridement
+        - infection_control
+        - moisture_management
+        - edge_protection
+        - compression
+        - adjunctive_therapy
+
+    ProductType:
+      type: string
+      enum:
+        - primary_dressing
+        - secondary_dressing
+        - compression_bandage
+        - topical_agent
+        - cleansing_solution
+        - medical_device
+        - consumable
+        - medication
+
+    InventoryStock:
+      type: object
+      properties:
+        stock_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        location_id:
+          type: string
+          format: uuid
+        current_quantity:
+          type: number
+          format: float
+        minimum_quantity:
+          type: number
+          format: float
+        expiry_date:
+          type: string
+          format: date
+        lot_number:
+          type: string
+        stock_status:
+          type: string
+          enum: [available, reserved, expired, quarantined]
+
+    BarcodeScanRequest:
+      type: object
+      required:
+        - barcode
+        - scan_type
+      properties:
+        barcode:
+          type: string
+        scan_type:
+          type: string
+          enum: [usage, receipt, count, lookup]
+        quantity_scanned:
+          type: number
+          format: float
+          default: 1
+        session_id:
+          type: string
+          format: uuid
+        location_id:
+          type: string
+          format: uuid
+
+    BarcodeScanResponse:
+      type: object
+      properties:
+        scan_id:
+          type: string
+          format: uuid
+        product:
+          $ref: '#/components/schemas/Product'
+        stock_info:
+          $ref: '#/components/schemas/InventoryStock'
+        scan_successful:
+          type: boolean
+        message:
+          type: string
+
+    # Device Schemas
+    MedicalDevice:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        device_name:
+          type: string
+        manufacturer:
+          type: string
+        model_number:
+          type: string
+        serial_number:
+          type: string
+        device_type:
+          type: string
+        device_status:
+          type: string
+          enum: [active, maintenance, retired, faulty]
+        is_connected:
+          type: boolean
+        last_communication:
+          type: string
+          format: date-time
+
+    DeviceDataSubmission:
+      type: object
+      required:
+        - data_type
+        - data_payload
+      properties:
+        data_type:
+          type: string
+        data_payload:
+          type: object
+          description: Device-specific data structure
+        session_id:
+          type: string
+          format: uuid
+        data_timestamp:
+          type: string
+          format: date-time
+
+    # Notification Schemas
+    Notification:
+      type: object
+      properties:
+        notification_id:
+          type: string
+          format: uuid
+        notification_type:
+          $ref: '#/components/schemas/NotificationType'
+        title:
+          type: string
+        message:
+          type: string
+        priority_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        patient_id:
+          type: string
+          format: uuid
+        wound_id:
+          type: string
+          format: uuid
+        notification_status:
+          type: string
+          enum: [pending, sent, delivered, read, failed]
+        scheduled_delivery:
+          type: string
+          format: date-time
+        read_timestamp:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    NotificationType:
+      type: string
+      enum:
+        - appointment_reminder
+        - dressing_change_due
+        - wound_deterioration
+        - low_stock_alert
+        - device_malfunction
+        - patient_education
+        - system_maintenance
+        - security_alert
+
+    # Sync Schemas
+    SyncSession:
+      type: object
+      properties:
+        sync_session_id:
+          type: string
+          format: uuid
+        device_identifier:
+          type: string
+        sync_status:
+          $ref: '#/components/schemas/SyncStatus'
+        sync_start_time:
+          type: string
+          format: date-time
+        last_sync_timestamp:
+          type: string
+          format: date-time
+        records_to_download:
+          type: integer
+        conflicts_detected:
+          type: integer
+
+    SyncSessionRequest:
+      type: object
+      required:
+        - device_identifier
+      properties:
+        device_identifier:
+          type: string
+        last_sync_timestamp:
+          type: string
+          format: date-time
+        tables_to_sync:
+          type: array
+          items:
+            type: string
+
+    SyncChangesRequest:
+      type: object
+      required:
+        - sync_session_id
+        - changes
+      properties:
+        sync_session_id:
+          type: string
+          format: uuid
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncChange'
+
+    SyncChangesResponse:
+      type: object
+      properties:
+        sync_session_id:
+          type: string
+          format: uuid
+        processed_changes:
+          type: integer
+        conflicts:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncConflict'
+        server_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncChange'
+
+    SyncChange:
+      type: object
+      required:
+        - table_name
+        - record_id
+        - operation_type
+      properties:
+        change_id:
+          type: string
+          format: uuid
+        table_name:
+          type: string
+        record_id:
+          type: string
+          format: uuid
+        operation_type:
+          type: string
+          enum: [INSERT, UPDATE, DELETE]
+        change_data:
+          type: object
+        change_timestamp:
+          type: string
+          format: date-time
+
+    SyncConflict:
+      type: object
+      properties:
+        conflict_id:
+          type: string
+          format: uuid
+        table_name:
+          type: string
+        record_id:
+          type: string
+          format: uuid
+        client_data:
+          type: object
+        server_data:
+          type: object
+        resolution_strategy:
+          type: string
+          enum: [server_wins, client_wins, merge, manual]
+
+    SyncStatus:
+      type: string
+      enum:
+        - pending
+        - in_progress
+        - completed
+        - failed
+        - conflict
+
+    # Report Schemas
+    HealingProgressReport:
+      type: object
+      properties:
+        report_id:
+          type: string
+          format: uuid
+        generated_at:
+          type: string
+          format: date-time
+        date_range:
+          $ref: '#/components/schemas/DateRange'
+        summary:
+          $ref: '#/components/schemas/HealingProgressSummary'
+        wound_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/WoundProgressDetail'
+
+    HealingProgressSummary:
+      type: object
+      properties:
+        total_wounds:
+          type: integer
+        healed_wounds:
+          type: integer
+        healing_wounds:
+          type: integer
+        static_wounds:
+          type: integer
+        deteriorating_wounds:
+          type: integer
+        average_healing_time_days:
+          type: number
+          format: float
+        healing_rate_percentage:
+          type: number
+          format: float
+
+    WoundProgressDetail:
+      type: object
+      properties:
+        wound_id:
+          type: string
+          format: uuid
+        patient_name:
+          type: string
+        wound_type:
+          $ref: '#/components/schemas/WoundType'
+        initial_size_cm2:
+          type: number
+          format: float
+        current_size_cm2:
+          type: number
+          format: float
+        size_reduction_percentage:
+          type: number
+          format: float
+        days_in_treatment:
+          type: integer
+        current_status:
+          $ref: '#/components/schemas/WoundStatus'
+
+    DateRange:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+
+    # Common Schemas
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total_pages:
+          type: integer
+        total_records:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          format: uuid
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

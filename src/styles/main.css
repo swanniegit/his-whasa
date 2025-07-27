@@ -1,0 +1,484 @@
+/**
+ * WHASA Wound-Care Nurse Practitioner App - Main Stylesheet
+ * Complete CSS framework for clinical mobile application
+ * 
+ * This is the main entry point for all styles. Import this file
+ * to get the complete design system and component library.
+ * 
+ * @version 1.0.0
+ * @author WHASA CSS-AGENT
+ * @description Mobile-first healthcare application styles
+ */
+
+/* ========================================
+   DESIGN SYSTEM FOUNDATION
+   ======================================== */
+
+/* Core design system with variables, reset, and utilities */
+@import url('design-system.css');
+
+/* ========================================
+   COMPONENT LIBRARY
+   ======================================== */
+
+/* Base UI components (buttons, forms, cards, navigation, etc.) */
+@import url('components.css');
+
+/* Clinical-specific components (assessments, photo capture, etc.) */
+@import url('clinical-components.css');
+
+/* Offline and sync state indicators */
+@import url('offline-sync.css');
+
+/* ========================================
+   LAYOUT SYSTEM
+   ======================================== */
+
+/* Responsive layouts and page structures */
+@import url('layouts.css');
+
+/* ========================================
+   ACCESSIBILITY FEATURES
+   ======================================== */
+
+/* WCAG 2.1 AA compliance and accessibility enhancements */
+@import url('accessibility.css');
+
+/* ========================================
+   APPLICATION-SPECIFIC STYLES
+   ======================================== */
+
+/**
+ * Custom application overrides and specific styles
+ * Add any application-specific styles below this comment
+ */
+
+/* App initialization and loading states */
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--color-primary-blue);
+  color: var(--color-text-white);
+}
+
+.app-loading-logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: var(--spacing-xl);
+}
+
+.app-loading-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-base);
+}
+
+.app-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid var(--color-text-white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Emergency alert overlay */
+.emergency-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(217, 83, 79, 0.95);
+  color: var(--color-text-white);
+  z-index: var(--z-index-modal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.emergency-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: var(--spacing-xl);
+  animation: pulse 1s infinite;
+}
+
+.emergency-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-base);
+}
+
+.emergency-message {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-2xl);
+  line-height: var(--line-height-relaxed);
+}
+
+.emergency-actions {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Clinical priority indicators */
+.priority-critical {
+  background-color: var(--color-alert-red);
+  color: var(--color-text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priority-high {
+  background-color: var(--color-accent-orange);
+  color: var(--color-text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priority-medium {
+  background-color: var(--color-secondary-teal);
+  color: var(--color-text-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priority-low {
+  background-color: var(--color-background-light);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-medium);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Medical device connection status */
+.device-connected {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-success-green);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.device-disconnected {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-alert-red);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.device-connecting {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-accent-orange);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.device-status-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.device-connecting .device-status-icon {
+  animation: pulse 1s infinite;
+}
+
+/* Clinical measurement display */
+.measurement-display {
+  background-color: var(--color-background-white);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  margin-bottom: var(--spacing-base);
+}
+
+.measurement-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-blue);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.measurement-unit {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.measurement-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-sm);
+}
+
+/* Wound healing stages */
+.healing-stage {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-base);
+  border-radius: var(--border-radius-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.healing-stage-inflammatory {
+  background-color: rgba(217, 83, 79, 0.1);
+  color: var(--color-alert-red-dark);
+  border: 1px solid rgba(217, 83, 79, 0.3);
+}
+
+.healing-stage-proliferative {
+  background-color: rgba(242, 140, 56, 0.1);
+  color: var(--color-accent-orange-dark);
+  border: 1px solid rgba(242, 140, 56, 0.3);
+}
+
+.healing-stage-maturation {
+  background-color: rgba(75, 181, 67, 0.1);
+  color: var(--color-success-green-dark);
+  border: 1px solid rgba(75, 181, 67, 0.3);
+}
+
+.healing-stage-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Photo annotation tools */
+.photo-annotation-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-base);
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: var(--border-radius-base);
+  position: absolute;
+  bottom: var(--spacing-base);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.annotation-tool {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-white);
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.annotation-tool:hover,
+.annotation-tool.active {
+  background-color: var(--color-primary-blue);
+}
+
+/* Cost estimation display */
+.cost-breakdown {
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-base) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cost-item:last-child {
+  border-bottom: none;
+  background-color: var(--color-background-light);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cost-item-name {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+.cost-item-quantity {
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-base);
+  font-size: var(--font-size-sm);
+}
+
+.cost-item-amount {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-monospace);
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  /* Print-specific overrides */
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  /* Clinical report formatting */
+  .clinical-report {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000000;
+  }
+  
+  .clinical-report h1 {
+    font-size: 18pt;
+    margin-bottom: 12pt;
+  }
+  
+  .clinical-report h2 {
+    font-size: 14pt;
+    margin-bottom: 8pt;
+  }
+  
+  .clinical-report h3 {
+    font-size: 12pt;
+    margin-bottom: 6pt;
+  }
+  
+  .clinical-report table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 12pt;
+  }
+  
+  .clinical-report th,
+  .clinical-report td {
+    border: 1px solid #000000;
+    padding: 6pt;
+    text-align: left;
+  }
+  
+  .clinical-report th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+  
+  /* Page break controls */
+  .page-break-before {
+    page-break-before: always;
+  }
+  
+  .page-break-after {
+    page-break-after: always;
+  }
+  
+  .no-page-break {
+    page-break-inside: avoid;
+  }
+}
+
+/* ========================================
+   DEVELOPMENT MODE HELPERS
+   ======================================== */
+
+/* Development mode grid overlay */
+.dev-mode .grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: 
+    linear-gradient(rgba(255, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: var(--spacing-base) var(--spacing-base);
+}
+
+/* Component boundaries in development */
+.dev-mode [class*="component-"],
+.dev-mode [class*="card-"],
+.dev-mode [class*="form-"] {
+  outline: 1px dashed rgba(255, 0, 0, 0.3);
+  position: relative;
+}
+
+.dev-mode [class*="component-"]::before,
+.dev-mode [class*="card-"]::before,
+.dev-mode [class*="form-"]::before {
+  content: attr(class);
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: 10px;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 2px 4px;
+  z-index: 1000;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================================
+   FRAMEWORK COMPLETION INDICATOR
+   ======================================== */
+
+/**
+ * CSS Framework Loading Complete Indicator
+ * This pseudo-element indicates that all CSS has loaded successfully
+ */
+body::after {
+  content: "WHASA CSS Framework v1.0.0 - Loaded Successfully";
+  position: fixed;
+  bottom: -100px;
+  left: 0;
+  font-size: 0;
+  opacity: 0;
+  pointer-events: none;
+  /* This allows JavaScript to detect when CSS is fully loaded */
+}

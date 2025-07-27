@@ -1,0 +1,243 @@
+Technical & Functional Specification for Wound‑Care Nurse Practitioner App
+Introduction
+This document translates the clinical proposal aligned with the Wound Healing Association of Southern Africa (WHASA) guidelines into comprehensive technical and functional requirements for a wound‑care nurse practitioner application. The goal is to ensure that a developer understands the scope, data models, workflows and business rules necessary to build an app that guides a wound specialist registered nurse from patient registration through wound healing, incorporating both negative‑pressure wound therapy (NPWT) and conventional wound management.
+
+Scope
+The system is aimed at wound specialist registered nurses practicing in South Africa. It will support two main care pathways:
+
+NPWT workflow: Step‑by‑step guidance for preparing, applying and monitoring negative‑pressure wound therapy. NPWT should only be proposed for wounds with healing potential, as WHASA’s guidelines emphasise that advanced modalities like NPWT should be considered only after local wound care and underlying causes are addressed
+safpj.co.za
+safpj.co.za
+.
+
+Conventional wound care: Comprehensive support for typical wound types (venous, arterial, mixed, diabetic foot, pressure injuries, burns, skin tears) covering assessment, dressing selection, compression, debridement, infection control, moisture balance, edge management and patient education【523287315005476†L143-L260】
+safpj.co.za
+.
+
+The app must work on tablets and smartphones used in theatre and outpatient settings. It must store data locally when offline and sync to the server when connectivity is available. The design should anticipate integration with medical devices (e.g., Bluetooth communication with NPWT pumps) and external systems (inventory management, billing, patient portal).
+
+User Roles
+Role	Description
+Wound specialist nurse	Primary user; performs patient intake, assessment, care planning, therapy execution and documentation.
+Patient	Receives education, adheres to care plan, and optionally uploads wound photos via a secure portal.
+Case Manager/Medical Aid Reviewer	Reviews treatment reports, cost estimates and authorizes funding.
+Administrator	Manages user accounts, roles, access permissions and system configuration.
+System	Represents automated background processes (notifications, reminders, data sync, analytics).
+
+Functional Requirements
+Patient Registration & Intake
+Demographics capture: Record surname, full name, sex, date of birth and ID number
+whasa.org
+.
+
+Clinical history: Document medical history affecting healing (diabetes, hypertension, obesity, autoimmune diseases, cardiac or respiratory conditions, previous surgeries, lymphatic alterations, radiation exposure, previous amputation, gait changes)
+whasa.org
+.
+
+Physical assessment: Enter blood pressure, temperature, respiration rate, pulse, height, weight and BMI
+whasa.org
+.
+
+Referral & contact info: Record referring doctor, practice number, ICD‑10 code, medical aid details, member numbers and contact information
+whasa.org
+.
+
+Initial evaluation date & case number: Automatically generate a unique report number and timestamp. Provide fields for case manager attention and contact details
+whasa.org
+.
+
+Wound Assessment
+Ulcer classification: Choose ulcer type (venous, arterial, mixed or other)
+whasa.org
+. The system should prompt the nurse for additional data depending on the type (e.g., ABPI for venous ulcers to rule out arterial disease
+safpj.co.za
+; University of Texas staging for diabetic foot ulcers
+whasa.org
+; stage for pressure injuries
+whasa.org
+).
+
+ABPI entry: Provide input for left and right ankle‑brachial pressure index values and leg circumference
+whasa.org
+. Trigger decision logic:
+
+If ABPI < 0.6: Suggest urgent referral and caution against compression.
+
+If 0.6 ≤ ABPI ≤ 0.8: Suggest modified compression and emphasise close monitoring
+safpj.co.za
+.
+
+If ABPI > 0.8: Compression therapy is safe and recommended for venous ulcers
+safpj.co.za
+.
+
+T.I.M.E. framework: Provide fields aligned with Tissue (viable vs. necrotic), Infection/inflammation (NERDS/STONES indicators), Moisture (exudate level/type), and Edge/surrounding skin
+whasa.org
+. Allow photo capture with measurement overlays for length, width and depth.
+
+Diabetic foot assessment: Include University of Texas staging, 60‑second foot screen, type of off‑loading device and toe pressure if available
+whasa.org
+.
+
+Pressure injury assessment: Present the National Pressure Injury Advisory Panel classification, capturing the stage and providing image fields
+whasa.org
+.
+
+Skin tear, moisture‑associated skin damage and burn assessments: Provide classification drop‑downs for skin tears (Type 1/2/3)
+whasa.org
+ and moisture‑associated conditions (incontinence, intertriginous, peri‑wound, peristomal)
+whasa.org
+.
+
+Intrinsic & extrinsic factors: Record factors influencing healing (age, oxygenation, medication, nutrition, infection, perfusion, oedema, smoking, venous insufficiency, diseases, stress, gender, obesity, alcoholism)
+whasa.org
+.
+
+Pain measurement: Provide numeric rating and location fields
+whasa.org
+.
+
+Photo documentation: Allow capturing wound images using device camera. Images must be time‑stamped, annotated, and stored with patient record.
+
+Care Planning
+Determine healability: Based on vascular assessment and systemic factors. Classify wounds as healable, maintenance or non‑healable
+whasa.org
+.
+
+Treatment objectives: Let nurses set objectives (e.g., reduce oedema, control infection, manage moisture, protect edges, treat pain, address systemic risk factors).
+
+Product selection wizard: Provide a structured database of dressings organised by WHASA’s Wound‑Bed Preparation categories
+whasa.org
+. The wizard should filter options by wound characteristics:
+
+Debridement: Autolytic gels, hydrogels, enzymatic agents, mechanical pads.
+
+Inflammation/infection control: Topical antiseptics (iodine, chlorhexidine, honey), antimicrobials (silver, copper), biofilm reduction agents (PHMB, hypochlorous acid, surfactants, mechanical removal).
+
+Moisture balance: Permeable films, hydrocolloids, foams, alginates, gelling fibres, super‑absorbers, composites.
+
+Edge management: Barrier creams, films, skin cleansers, adhesive removers, non‑adherent dressings for pain control
+safpj.co.za
+.
+
+Compression systems: Single, two‑layer or multi‑layer bandages; suggest against compression for arterial ulcers
+safpj.co.za
+.
+
+Adjunctive therapies: Present NPWT as an option only for healable wounds and after treating the underlying cause
+safpj.co.za
+safpj.co.za
+. Other options include hyperbaric oxygen therapy, skin substitutes or grafts (if available in facility).
+
+Patient‑centred concerns: Capture the patient’s priorities and social support. Record expected healing time frames and set reminders for education sessions
+safpj.co.za
+.
+
+Cost estimate: Provide a table where nurses select services and supplies, with cost per visit and quantity. Auto‑calculate totals and generate codes for billing (e.g., individual consultation, treatment of extensive wounds, dressing tray)
+whasa.org
+.
+
+Therapy Execution & Documentation
+Task checklists: For each appointment, display a dynamic checklist derived from the care plan. For NPWT, list foam selection, cutting, sealing, pump connection, pressure settings and run time; record numeric values and any pump alarms.
+
+Conventional wound care checklist: Guide cleaning, irrigation, debridement (method selected), dressing application, compression bandaging (if applicable) and off‑loading device placement. Provide fields to record analgesia and patient response.
+
+Real‑time guidance: If ABPI or wound classification changes, suggest adjustments (e.g., stop compression if arterial insufficiency is detected). Alert if the wound deteriorates or fails to progress along MEASURE scores
+safpj.co.za
+.
+
+Automatic documentation: Generate structured clinical notes summarizing date/time, wound parameters, products used, instructions given, pain scores and patient feedback. Include pictures and digital signatures.
+
+Follow‑up & Monitoring
+Timeline dashboard: Show each patient’s journey along the workflow (Registration → Assessment → Plan → Therapy → Follow‑up → Healed). Use colour codes for stages. Provide filters by wound type, priority or days since last visit.
+
+Notifications: Send push notifications or SMS to the nurse for upcoming dressing changes or overdue follow‑ups. For patients using the portal, send reminders for appointment times and self‑monitoring tasks.
+
+Progress metrics: Track wound size reduction, MEASURE/MEASURE‑like scores, time to healing and cost. Present analytics dashboards summarizing average healing times by ulcer type and resource usage, enabling continuous quality improvement.
+
+Patient portal: Allow patients (or carers) to view educational material, upcoming appointments, and to upload wound photos. Nurse receives alerts for new uploads and can request additional images if needed.
+
+Supply & Inventory Management
+Barcode scanning: Use the device camera to scan consumable barcodes (dressings, foam kits, canisters). Deduct from inventory and associate with patient encounter.
+
+Reorder thresholds: Set minimum stock levels for each supply; trigger notifications to reorder when stock drops below threshold.
+
+Batch & expiry tracking: Record lot numbers and expiry dates to ensure first‑expiry, first‑out usage and recall management.
+
+Integration & Data Interoperability
+NPWT device integration: Use Bluetooth or USB to read pump parameters and running time. Record settings and errors directly into the patient record.
+
+HL7/FHIR interface: Provide optional integration to electronic health records (EHR) for demographic imports, document exports and billing codes.
+
+Secure messaging: Support encrypted messaging between nurse, patient and multidisciplinary team. Documented education sessions and case discussions should be available to all authorised providers.
+
+Security & Compliance
+Authentication & authorisation: Require multi‑factor login (e.g., password plus OTP). Use role‑based access control to restrict sensitive fields (e.g., financial data to administrators, clinical data to nurses).
+
+Encryption: Encrypt all data at rest and in transit. Use secure APIs (HTTPS/TLS) for communication with backend servers.
+
+Audit trails: Maintain logs of all user actions for medico‑legal purposes. Include time‑stamped records of modifications and data access.
+
+Data retention & backup: Comply with the South African Protection of Personal Information Act (POPIA) for patient data retention. Provide regular backup and disaster recovery procedures.
+
+Non‑Functional Requirements
+Performance: The app must load within 2 seconds and respond to user actions within 300 ms on mid‑range devices.
+
+Availability: System should target 99.5 % uptime, with offline functionality and background sync.
+
+Usability: Design must be intuitive for clinicians with minimal training. Use large buttons, high‑contrast colours and accessible fonts suitable for clinical environments.
+
+Scalability: Architecture should support multiple clinics and thousands of patient records. Use RESTful APIs and microservices where appropriate.
+
+Localization: Default language is English; allow future translation into Afrikaans or other South African languages.
+
+Regulatory compliance: Align with WHASA guidelines and relevant standards (e.g., South African Health Products Regulatory Authority for device integration). Ensure documentation formats meet medical aid requirements.
+
+System Architecture Overview
+Client: Cross‑platform mobile app (iOS & Android) built with Flutter or React Native. Utilises device camera, storage and connectivity. Contains offline database (e.g., SQLite) for caching patient records and images.
+
+Backend: Cloud‑based service built on Node.js or Python (Django) providing RESTful APIs for patient data, assessments, inventory and analytics. Database using PostgreSQL or MongoDB. Image storage in secure object storage (e.g., AWS S3 or on‑premises equivalent). Integration microservices for NPWT device data and medical aid billing (using FHIR/HL7 where possible).
+
+Analytics: Use data warehouse or integrated BI tool for reporting and dashboards. Generate MEASURE trends, healing time distributions and resource utilisation.
+
+Security: Implement authentication using OAuth 2.0, JWT tokens and encrypted storage. Use TLS/SSL for all data transfers.
+
+Developer Checklist
+Implement user registration, login and role management.
+
+Create database schema for patient demographics, medical history, wound assessments (including ABPI, T.I.M.E., classification), care plans, therapy logs, inventory items, cost estimates and audit trails.
+
+Design the main dashboard with timeline of patient cases, sortable patient queue, quick action buttons and alerts (e.g., overdue dressing changes).
+
+Build modular forms for each assessment type (lower limb ulcers, diabetic foot, pressure injuries, skin tears, burns, moisture‑associated damage). Include dynamic logic based on ABPI and ulcer classification
+safpj.co.za
+.
+
+Incorporate dressing classification database with categories and product attributes according to WHASA’s Wound‑Bed Preparation guidelines
+whasa.org
+.
+
+Create care planning wizard that generates treatment plans, prompts for patient‑centred concerns and calculates cost estimates
+whasa.org
+.
+
+Develop therapy checklists for NPWT and conventional wound care with data capture of time, materials, device settings and outcomes
+safpj.co.za
+.
+
+Provide reporting functionality that outputs structured treatment reports and progress notes for each visit.
+
+Implement inventory management with barcode scanning, reorder alerts and supply tracking.
+
+Enable photo capture and annotation integrated into assessments and therapy documentation.
+
+Integrate notifications and reminder system for follow‑ups and patient education.
+
+Add analytics dashboards to monitor healing trends and identify workflow bottlenecks.
+
+Ensure security compliance by encrypting data, enforcing access controls and maintaining audit logs.
+
+Plan for device integration by implementing interfaces (e.g., Bluetooth) to pull data from NPWT pumps and record settings.
+
+Conclusion
+This specification translates WHASA’s clinical recommendations and forms into actionable requirements for a developer. Adhering to these functional and technical guidelines will result in a robust, evidence‑based wound‑care app that streamlines workflows from patient registration through wound healing, improves documentation quality and supports multidisciplinary collaboration.

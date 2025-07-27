@@ -1,0 +1,151 @@
+Product Requirements Document (PRD)
+Product Title
+Workflow‑Driven Wound‑Care Nurse Practitioner App
+
+Executive Summary
+Wound specialist nurses in South Africa manage a complex workload that encompasses patient registration, assessment, therapy planning, execution and follow‑up. WHASA’s consensus guidelines emphasise a structured process involving comprehensive vascular assessment, individualised care planning, treatment of underlying causes and regular reassessment
+safpj.co.za
+. Existing practices rely heavily on paper forms and manual calculation, which slow workflows and increase the risk of oversight. This product aims to deliver a mobile app that automates these workflows, ensuring evidence‑based care, better documentation, supply management and patient engagement.
+
+Goals & Objectives
+Streamline Wound‑Care Workflow: Provide a single interface guiding nurses through the entire process from patient registration to wound healing, ensuring no critical step is missed.
+
+Improve Documentation Quality: Digitally capture clinical data, photographs and care plans aligned with WHASA’s wound‑care assessment forms
+whasa.org
+whasa.org
+.
+
+Support Evidence‑Based Decisions: Embed clinical rules from WHASA guidelines (e.g., ABPI thresholds, compression indications, dressing classification)
+safpj.co.za
+whasa.org
+.
+
+Enhance Patient Engagement: Deliver tailored education and reminders to patients and carers to improve adherence and outcomes.
+
+Reduce Operational Burden: Integrate inventory management, cost estimation and automated reporting to reduce administrative tasks.
+
+Target Users & Use Cases
+Primary Users
+Wound specialist registered nurses working in hospital theatres, outpatient clinics and community health practices. They require timely decision support, standardized documentation and efficient supply management.
+
+Secondary Users
+Case managers/medical aids who need clear documentation and cost estimates for authorisation.
+
+Patients and carers who require education, follow‑up reminders and secure communication.
+
+Other clinicians (e.g., vascular surgeons, diabetic foot specialists) who may consult via the app.
+
+Core Use Cases
+Patient Registration & Intake: Nurse captures demographics, medical history and risk factors as per WHASA’s assessment form
+whasa.org
+.
+
+Wound Assessment: Nurse performs T.I.M.E. assessment (Tissue, Infection/inflammation, Moisture, Edge), records ABPI, ulcer classification and associated factors
+whasa.org
+.
+
+Care Plan Creation: System suggests evidence‑based interventions based on wound type and patient factors, using WHASA’s dressing classification
+whasa.org
+.
+
+Therapy Execution: Nurse follows step‑by‑step checklist for NPWT or conventional wound care, records materials used, wound photographs and pain scores.
+
+Follow‑up & Monitoring: Nurse schedules visits, tracks healing progress and receives alerts for overdue dressing changes or deteriorating wounds
+safpj.co.za
+.
+
+Patient Education: System delivers education modules tailored to ulcer type and records patient adherence.
+
+Inventory & Cost Management: Nurse scans supplies, monitors stock levels and generates cost estimates for each treatment episode
+whasa.org
+.
+
+Reporting & Billing: System generates structured reports for medical aid review and stores them securely.
+
+Functional Requirements (High-Level)
+Priority	Requirement
+High	Capture demographic and clinical history, including risk factors like diabetes, hypertension and previous surgeries
+whasa.org
+.
+High	Provide ABPI input fields and implement decision logic for compression therapy based on WHASA thresholds
+safpj.co.za
+.
+High	Implement T.I.M.E. and MEASURE assessment forms with photo capture and measurement overlays
+whasa.org
+.
+High	Generate personalised care plans and dressing recommendations based on wound classification and WHASA’s Wound‑Bed Preparation categories
+whasa.org
+.
+High	Provide step‑by‑step checklists for NPWT application, including foam sizing, sealing, pump settings and monitoring
+safpj.co.za
+.
+High	Offer forms for diabetic foot and pressure injury assessments, including staging systems
+whasa.org
+.
+Medium	Integrate cost estimation tables with pre‑defined procedure codes and auto‑calculation
+whasa.org
+.
+Medium	Incorporate inventory management with barcode scanning and reorder alerts.
+Medium	Provide secure patient portal for uploading photos and receiving education/reminders.
+Low	Implement analytics dashboards summarizing healing times and resource utilisation.
+
+Non‑Functional Requirements (Summary)
+Usability: Intuitive interface designed for clinical environments; offline capability with sync.
+
+Performance: Sub‑2 second screen load time on mid‑range devices.
+
+Security: POPIA compliance, encryption in transit and at rest, role‑based access control and audit trails.
+
+Scalability: Support multiple clinics and thousands of patient records.
+
+Device Integration: Support Bluetooth connectivity to NPWT pumps and barcode scanners.
+
+Success Metrics & KPIs
+Workflow Efficiency: Reduce time spent on documentation per patient by ≥30 % compared with paper forms.
+
+Clinical Compliance: ≥95 % of assessments include ABPI when indicated
+whasa.org
+ and T.I.M.E. components
+whasa.org
+.
+
+Healing Outcomes: Achieve reduction in average healing time for venous and arterial ulcers by 10 % within 6 months of deployment.
+
+User Adoption: ≥80 % of wound specialist nurses in the pilot site actively use the app within one month.
+
+Inventory Accuracy: Reduce supply stock‑outs by 90 % through automated alerts.
+
+Milestones & Timeline (Indicative)
+Discovery & Design (4 weeks): Finalise user journeys, wireframes and data models. Validate with clinical stakeholders.
+
+MVP Development (8 weeks): Build core modules (registration, assessment, care planning, NPWT & conventional workflows). Integrate offline storage and sync.
+
+Pilot Testing (4 weeks): Deploy to pilot clinic; collect feedback; iterate on usability and clinical validity.
+
+Full Release (6 weeks): Add inventory management, cost estimation, patient portal and analytics. Prepare documentation and training materials.
+
+Key Risks & Mitigations
+Risk	Impact	Mitigation
+Clinical rule errors	Incorrect therapy recommendations could harm patients.	Rigorously validate decision rules against WHASA guidelines and perform user acceptance testing with wound specialists.
+Data privacy breach	Unauthorized disclosure of patient data violates POPIA.	Implement encryption, strict access controls and regular security audits.
+User adoption	Nurses may resist digital systems.	Involve clinicians early in design, offer training and emphasise time‑saving benefits.
+Device integration issues	NPWT pumps may not standardise communication protocols.	Engage device manufacturers to access APIs; provide manual entry fallback.
+
+Appendix: Research & Evidence References
+The WHASA consensus document emphasises individualised care plans, reassessment at every contact and appropriate compression therapy based on ABPI
+safpj.co.za
+safpj.co.za
+.
+
+WHASA’s wound‑care assessment form captures detailed medical history, physical assessment and ulcer classification
+whasa.org
+whasa.org
+.
+
+The T.I.M.E. framework guides assessment of tissue viability, infection/inflammation, moisture balance and edge/surrounding skin
+whasa.org
+.
+
+WHASA’s dressing classification provides categories for debridement, infection control, moisture management and edge protection
+whasa.org
+.
