@@ -5,16 +5,31 @@ import { Database } from '../types/database'
 
 type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 
+interface UserRole {
+  role_id: string
+  role_name: string
+  description: string
+  permissions: any
+  assigned_at: string
+}
+
 interface AuthContextType {
   user: User | null
   session: Session | null
   profile: Tables<'users'> | null
+  userRoles: UserRole[]
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ success: boolean; error: any }>
-  signUp: (email: string, password: string, userData: Partial<Tables<'users'>>) => Promise<{ error: any }>
+  signUp: (email: string, password: string, userData: Partial<Tables<'users'>>, roleId?: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: any }>
   updateProfile: (updates: Partial<Tables<'users'>>) => Promise<{ error: any }>
+  assignRole: (userId: string, roleId: string) => Promise<{ error: any }>
+  removeRole: (userId: string, roleId: string) => Promise<{ error: any }>
+  hasPermission: (permission: string, resource?: string) => boolean
+  isAdmin: () => boolean
+  isWoundSpecialist: () => boolean
+  isCaseManager: () => boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -35,6 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Tables<'users'> | null>(null)
+  const [userRoles, setUserRoles] = useState<UserRole[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -47,6 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (session?.user) {
           await loadProfile(session.user.id)
+          await loadUserRoles(session.user.id)
         }
         
         setLoading(false)
@@ -67,8 +84,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           if (session?.user) {
             await loadProfile(session.user.id)
+            await loadUserRoles(session.user.id)
           } else {
             setProfile(null)
+            setUserRoles([])
           }
           
           setLoading(false)
@@ -222,6 +241,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
+  const loadUserRoles = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select(`
+          role_id,
+          assigned_at,
+          user_roles_ref (
+            role_name,
+            description,
+            permissions
+          )
+        `)
+        .eq('user_id', userId)
+
+      if (error) {
+        console.error('Error loading user roles:', error)
+        setUserRoles([])
+        return
+      }
+
+      const roles = data?.map((item: any) => ({
+        role_id: item.role_id,
+        role_name: item.user_roles_ref?.role_name,
+        description: item.user_roles_ref?.description,
+        permissions: item.user_roles_ref?.permissions,
+        assigned_at: item.assigned_at
+      })) || []
+
+      setUserRoles(roles)
+    } catch (error) {
+      console.error('Error loading user roles:', error)
+      setUserRoles([])
+    }
+  }
+
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -230,7 +285,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return { success: !error, error }
   }
 
-  const signUp = async (email: string, password: string, userData: Partial<Tables<'users'>>) => {
+  const signUp = async (email: string, password: string, userData: Partial<Tables<'users'>>, roleId?: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -262,6 +317,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (profileError) {
         console.error('Error creating profile:', profileError)
         return { error: profileError }
+      }
+
+      // Assign default role if provided
+      if (roleId) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: data.user.id,
+            role_id: roleId,
+            assigned_by: data.user.id // Self-assigned during registration
+          })
+
+        if (roleError) {
+          console.error('Error assigning role:', roleError)
+          // Don't fail registration if role assignment fails
+        }
       }
     }
 
@@ -296,16 +367,93 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return { error }
   }
 
+  const assignRole = async (userId: string, roleId: string) => {
+    if (!user) {
+      return { error: new Error('No user logged in') }
+    }
+
+    const { error } = await supabase
+      .from('user_roles')
+      .insert({
+        user_id: userId,
+        role_id: roleId,
+        assigned_by: user.id
+      })
+
+    if (!error) {
+      await loadUserRoles(userId)
+    }
+
+    return { error }
+  }
+
+  const removeRole = async (userId: string, roleId: string) => {
+    if (!user) {
+      return { error: new Error('No user logged in') }
+    }
+
+    const { error } = await supabase
+      .from('user_roles')
+      .delete()
+      .eq('user_id', userId)
+      .eq('role_id', roleId)
+
+    if (!error) {
+      await loadUserRoles(userId)
+    }
+
+    return { error }
+  }
+
+  const hasPermission = (permission: string, resource?: string): boolean => {
+    if (!userRoles.length) return false
+
+    return userRoles.some(role => {
+      const permissions = role.permissions
+      
+      // Check for admin role (has all permissions)
+      if (permissions.all && permissions.all.includes(permission)) {
+        return true
+      }
+
+      // Check specific resource permissions
+      if (resource && permissions[resource]) {
+        return permissions[resource].includes(permission)
+      }
+
+      return false
+    })
+  }
+
+  const isAdmin = (): boolean => {
+    return userRoles.some(role => role.role_name === 'administrator')
+  }
+
+  const isWoundSpecialist = (): boolean => {
+    return userRoles.some(role => role.role_name === 'wound_specialist_nurse')
+  }
+
+  const isCaseManager = (): boolean => {
+    return userRoles.some(role => role.role_name === 'case_manager')
+  }
+
   const value: AuthContextType = {
     user,
     session,
     profile,
+    userRoles,
     loading,
     signIn,
     signUp,
     signOut,
     resetPassword,
     updateProfile,
+    assignRole,
+    removeRole,
+    hasPermission,
+    isAdmin,
+    isWoundSpecialist,
+    isCaseManager,
   }
 
   return (

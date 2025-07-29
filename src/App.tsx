@@ -1,77 +1,145 @@
 import React, { Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './hooks/useAuth'
-import { useOffline } from './hooks/useOffline'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from './contexts/AuthContext'
+import { OfflineProvider } from './contexts/OfflineContext'
+import LoadingSpinner from './components/LoadingSpinner'
+import ErrorFallback from './components/ErrorFallback'
+import { ErrorBoundary } from 'react-error-boundary'
 
-// Lazy load components for better performance
-const Layout = React.lazy(() => import('./components/Layout'))
-const Login = React.lazy(() => import('./pages/Login'))
-const Dashboard = React.lazy(() => import('./pages/Dashboard'))
-const PatientRegistration = React.lazy(() => import('./pages/PatientRegistration'))
-const WoundAssessment = React.lazy(() => import('./pages/WoundAssessment'))
-const CarePlanning = React.lazy(() => import('./pages/CarePlanning'))
-const TherapyExecution = React.lazy(() => import('./pages/TherapyExecution'))
-const PatientList = React.lazy(() => import('./pages/PatientList'))
-const Settings = React.lazy(() => import('./pages/Settings'))
-const ReferenceTables = React.lazy(() => import('./pages/Admin/ReferenceTables'))
-const TestPage = React.lazy(() => import('./pages/TestPage'))
-const LoadingSpinner = React.lazy(() => import('./components/LoadingSpinner'))
-const OfflineIndicator = React.lazy(() => import('./components/OfflineIndicator'))
+// Import existing pages
+import Login from './pages/Login'
+import Register from './pages/Register'
+import TestPage from './pages/TestPage'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+import PatientList from './pages/PatientList'
+import PatientRegistration from './pages/PatientRegistration'
+import WoundAssessment from './pages/WoundAssessment'
+import CarePlanning from './pages/CarePlanning'
+import TherapyExecution from './pages/TherapyExecution'
+import Settings from './pages/Settings'
+import ReferenceTables from './pages/Admin/ReferenceTables'
+import UserManagement from './pages/Admin/UserManagement'
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth()
-  
-  if (loading) {
-    return <LoadingSpinner />
-  }
-  
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
-  
-  return <>{children}</>
-}
+// Import new booking system page
+const BookingSystem = React.lazy(() => import('./pages/BookingSystem'))
+
+// Import enhanced ProtectedRoute
+const ProtectedRoute = React.lazy(() => import('./components/ProtectedRoute'))
+
+// Import basic protected route (renamed from original)
+const BasicProtectedRoute = React.lazy(() => import('./components/BasicProtectedRoute'))
+
+// Import CSS
+import './styles/index.css'
 
 function App() {
-  const { isOnline } = useOffline()
-
   return (
-    <div className="app">
-      {/* Offline Indicator */}
-      {!isOnline && <OfflineIndicator />}
-      
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/test" element={<TestPage />} />
-          
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <AuthProvider>
+        <OfflineProvider>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
           >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="patients" element={<PatientList />} />
-            <Route path="patients/new" element={<PatientRegistration />} />
-            <Route path="patients/:patientId/assessment" element={<WoundAssessment />} />
-            <Route path="patients/:patientId/care-plan" element={<CarePlanning />} />
-            <Route path="patients/:patientId/therapy" element={<TherapyExecution />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="admin/reference-tables" element={<ReferenceTables />} />
-          </Route>
-          
-          {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Suspense>
-    </div>
+            <div className="app">
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                }}
+              />
+              
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/test" element={<TestPage />} />
+                  
+                  {/* Protected Routes */}
+                  <Route
+                    path="/"
+                    element={
+                      <BasicProtectedRoute>
+                        <Layout />
+                      </BasicProtectedRoute>
+                    }
+                  >
+                    <Route index element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    
+                    {/* Patient Management - Available to all authenticated users */}
+                    <Route path="patients" element={<PatientList />} />
+                    <Route path="patients/new" element={<PatientRegistration />} />
+                    
+                    {/* Booking System - Available to all authenticated users */}
+                    <Route path="booking" element={<BookingSystem />} />
+                    
+                    {/* Clinical Features - Only for Wound Specialists and Admins */}
+                    <Route 
+                      path="patients/:patientId/assessment" 
+                      element={
+                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                          <WoundAssessment />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="patients/:patientId/care-plan" 
+                      element={
+                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                          <CarePlanning />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="patients/:patientId/therapy" 
+                      element={
+                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                          <TherapyExecution />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Settings - Available to all authenticated users */}
+                    <Route path="settings" element={<Settings />} />
+                    
+                    {/* Administration - Only for Admins */}
+                    <Route 
+                      path="admin/reference-tables" 
+                      element={
+                        <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
+                          <ReferenceTables />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="admin/user-management" 
+                      element={
+                        <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
+                          <UserManagement />
+                        </ProtectedRoute>
+                      } 
+                    />
+                  </Route>
+                  
+                  {/* Catch all route */}
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </Suspense>
+            </div>
+          </BrowserRouter>
+        </OfflineProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

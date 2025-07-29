@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { toast } from 'react-hot-toast'
 
@@ -117,6 +117,14 @@ const Login: React.FC = () => {
             <p className="text-xs text-blue-600">
               Email: admin@whasa.com<br />
               Password: password123
+            </p>
+          </div>
+          <div className="mt-4">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                Register here
+              </Link>
             </p>
           </div>
         </div>
