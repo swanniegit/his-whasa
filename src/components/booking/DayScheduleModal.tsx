@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { format } from 'date-fns'
-import { NurseBooking, NurseOncall } from '../../types/booking'
+import { NurseBooking } from '../../types/booking'
 import { useBookings } from '../../hooks/useBookings'
 import { useOncall } from '../../hooks/useOncall'
 import { useReferenceData } from '../../hooks/useReferenceData'
@@ -41,6 +41,16 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
     return nurse?.color_code || '#6b7280'
   }
 
+  // Helper function to normalize time format for comparison
+  const normalizeTime = (time: string) => {
+    // If time includes seconds (e.g., "HH:MM:SS"), truncate to "HH:MM"
+    if (time.length === 8 && time[2] === ':' && time[5] === ':') {
+      return time.substring(0, 5);
+    }
+    // Otherwise, assume it's already "HH:MM" or similar, and return as is after trimming.
+    return time.trim();
+  }
+
   const getPaymentStatus = (booking: NurseBooking) => {
     const { outstanding_amount, paid_amount } = booking
     if (outstanding_amount === 0 && paid_amount === 0) return { type: 'no_payment', label: 'No Payment', color: 'bg-gray-100 text-gray-800' }
@@ -50,9 +60,12 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
   }
 
   const handleAddBooking = (timeSlot: string) => {
+    console.log('handleAddBooking called with timeSlot:', timeSlot)
+    console.log('Current state before setting:', { showBookingModal, selectedTimeSlot, bookingModalMode })
     setSelectedTimeSlot(timeSlot)
     setBookingModalMode('create')
     setShowBookingModal(true)
+    console.log('State should now be:', { showBookingModal: true, selectedTimeSlot: timeSlot, bookingModalMode: 'create' })
   }
 
   const handleEditBooking = (booking: NurseBooking) => {
@@ -142,10 +155,14 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
             )}
 
             {/* Time Slots */}
-            <div className="space-y-3">
-              <h4 className="text-md font-medium text-gray-900 mb-3">Time Slots</h4>
+            <div className="space-y-4">
+              <h4 className="text-md font-medium mb-3 text-gray-900">Time Slots</h4>
               {timeSlots.map(time => {
-                const slotBookings = dayBookings.filter(b => b.slot_time === time)
+                const slotBookings = dayBookings.filter(b => {
+                  const normalizedBookingTime = normalizeTime(b.slot_time)
+                  const normalizedSlotTime = normalizeTime(time)
+                  return normalizedBookingTime === normalizedSlotTime
+                })
                 
                 return (
                   <div key={time} className="border rounded-lg overflow-hidden">
@@ -156,7 +173,7 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
                       <div className="flex-1 ml-4">
                         {slotBookings.length > 0 ? (
                           <span className="text-sm text-gray-600">
-                            {slotBookings.length} booking(s)
+                            {slotBookings.length} booking{slotBookings.length !== 1 ? 's' : ''}
                           </span>
                         ) : (
                           <span className="text-sm text-gray-400">Available</span>
@@ -171,99 +188,104 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
                     </div>
                     
                     <div className="p-4">
-                      {slotBookings.length > 0 ? (
-                        <div className="space-y-3">
+                      {slotBookings.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
                           {slotBookings.map(booking => {
                             const paymentStatus = getPaymentStatus(booking)
                             return (
                               <div
                                 key={booking.id}
-                                className="p-3 rounded-lg border"
+                                className="bg-white border rounded p-3 flex-1 min-w-0 max-w-xs"
                                 style={{ 
                                   backgroundColor: getNurseColor(booking.nurse_id || '') + '10',
                                   borderLeftColor: getNurseColor(booking.nurse_id || ''),
                                   borderLeftWidth: '4px'
                                 }}
                               >
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <h5 className="font-medium text-gray-900">
-                                        {booking.patient_name}
-                                      </h5>
-                                      {booking.patient_id_case_assess && (
-                                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                          {booking.patient_id_case_assess}
-                                        </span>
-                                      )}
+                                <div className="flex flex-col">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h5 className="font-medium text-gray-900 text-sm truncate">
+                                      {booking.patient_name}
+                                    </h5>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={() => handleViewBooking(booking)}
+                                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                        title="View details"
+                                      >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        onClick={() => handleEditBooking(booking)}
+                                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="Edit booking"
+                                      >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteBooking(booking)}
+                                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                        title="Delete booking"
+                                      >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      </button>
                                     </div>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                                      <div>
-                                        <span className="font-medium">Nurse:</span> {booking.nurse?.name || 'Unassigned'}
-                                      </div>
-                                      <div>
-                                        <span className="font-medium">Service:</span> {booking.intervention_type?.name || 'Not specified'}
-                                      </div>
-                                      <div>
-                                        <span className="font-medium">Location:</span> {booking.place?.name || 'Not specified'}
-                                      </div>
-                                      <div>
-                                        <span className="font-medium">Payment:</span>
-                                        <span className={`ml-1 px-2 py-1 rounded-full text-xs ${paymentStatus.color}`}>
-                                          {paymentStatus.label}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    
-                                    {booking.notes && (
-                                      <div className="mt-2 text-sm text-gray-500">
-                                        <span className="font-medium">Notes:</span> {booking.notes}
-                                      </div>
+                                  </div>
+                                  
+                                  {booking.patient_id_case_assess && (
+                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded mb-2 inline-block">
+                                      {booking.patient_id_case_assess}
+                                    </span>
+                                  )}
+                                  
+                                  <div className="text-xs text-gray-600 space-y-1">
+                                    {booking.nurse && (
+                                      <p className="text-blue-600">
+                                        {booking.nurse.name}
+                                      </p>
+                                    )}
+                                    {booking.intervention_type && (
+                                      <p className="text-green-600">
+                                        {booking.intervention_type.name}
+                                      </p>
+                                    )}
+                                    {booking.place && (
+                                      <p className="text-purple-600">
+                                        {booking.place.name}
+                                      </p>
+                                    )}
+                                    {booking.payment_method && (
+                                      <p>{booking.payment_method}</p>
+                                    )}
+                                    {(booking.outstanding_amount > 0 || booking.paid_amount > 0) && (
+                                      <p>
+                                        {booking.outstanding_amount > 0 && `Outstanding: $${booking.outstanding_amount}`}
+                                        {booking.outstanding_amount > 0 && booking.paid_amount > 0 && ' | '}
+                                        {booking.paid_amount > 0 && `Paid: $${booking.paid_amount}`}
+                                      </p>
                                     )}
                                   </div>
                                   
-                                  <div className="flex items-center gap-2 ml-4">
-                                    <button
-                                      onClick={() => handleViewBooking(booking)}
-                                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                                      title="View details"
-                                    >
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                      </svg>
-                                    </button>
-                                    <button
-                                      onClick={() => handleEditBooking(booking)}
-                                      className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                      title="Edit booking"
-                                    >
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                      </svg>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteBooking(booking)}
-                                      className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                      title="Delete booking"
-                                    >
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                      </svg>
-                                    </button>
+                                  {booking.notes && (
+                                    <p className="text-xs text-gray-600 mt-2 line-clamp-2">{booking.notes}</p>
+                                  )}
+                                  
+                                  <div className="mt-2">
+                                    <span className={`px-2 py-1 rounded-full text-xs ${paymentStatus.color}`}>
+                                      {paymentStatus.label}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
                             )
                           })}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 text-gray-400">
-                          <svg className="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <p className="text-sm">No bookings for this time slot</p>
                         </div>
                       )}
                     </div>
@@ -292,14 +314,23 @@ const DayScheduleModal: React.FC<DayScheduleModalProps> = ({
 
       {/* Booking Modal */}
       {showBookingModal && (
-        <BookingModal
-          isOpen={showBookingModal}
-          onClose={handleBookingModalClose}
-          booking={selectedBooking}
-          date={date}
-          time={selectedTimeSlot}
-          mode={bookingModalMode}
-        />
+        <>
+          {console.log('Rendering BookingModal with props:', { 
+            showBookingModal, 
+            selectedBooking, 
+            date, 
+            selectedTimeSlot, 
+            bookingModalMode 
+          })}
+          <BookingModal
+            isOpen={showBookingModal}
+            onClose={handleBookingModalClose}
+            booking={selectedBooking}
+            date={date}
+            time={selectedTimeSlot}
+            mode={bookingModalMode}
+          />
+        </>
       )}
     </>
   )

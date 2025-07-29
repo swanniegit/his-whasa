@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { format } from 'date-fns'
-import { NurseBooking, BookingFormData, BookingModalProps } from '../../types/booking'
+import { BookingFormData, BookingModalProps } from '../../types/booking'
 import { useReferenceData } from '../../hooks/useReferenceData'
 import { useBookings } from '../../hooks/useBookings'
 import { toast } from 'react-hot-toast'
+import { BookingApiResponse } from '../../types/booking'
 
 const BookingModal: React.FC<BookingModalProps> = ({
   isOpen,
@@ -13,6 +14,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
   time,
   mode
 }) => {
+  console.log('BookingModal rendered with props:', { isOpen, mode, date, time })
+  
   const [formData, setFormData] = useState<BookingFormData>({
     nurse_id: '',
     patient_name: '',
@@ -67,20 +70,39 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    
+    const cleanedFormData: BookingFormData = {
+      patient_name: formData.patient_name,
+      booking_date: formData.booking_date,
+      slot_time: formData.slot_time,
+      outstanding_amount: formData.outstanding_amount,
+      paid_amount: formData.paid_amount,
+      payment_method: formData.payment_method,
+      ...(formData.nurse_id && { nurse_id: formData.nurse_id }),
+      ...(formData.intervention_type_id && { intervention_type_id: formData.intervention_type_id }),
+      ...(formData.place_id && { place_id: formData.place_id }),
+      ...(formData.patient_id_case_assess && { patient_id_case_assess: formData.patient_id_case_assess }),
+      ...(formData.notes && { notes: formData.notes })
+    }
 
     try {
-      let result
+      let result: BookingApiResponse
+      
       if (mode === 'create') {
-        result = await createBooking(formData)
+        result = await createBooking(cleanedFormData)
       } else if (mode === 'edit' && booking) {
-        result = await updateBooking(booking.id, formData)
+        result = await updateBooking(booking.id, cleanedFormData)
+      } else {
+        toast.error('Invalid operation mode')
+        setLoading(false)
+        return
       }
 
-      if (result?.success) {
-        toast.success(mode === 'create' ? 'Booking created successfully!' : 'Booking updated successfully!')
+      if (result.success) {
+        toast.success(mode === 'create' ? 'Booking created successfully' : 'Booking updated successfully')
         onClose()
       } else {
-        toast.error(result?.error || 'Failed to save booking')
+        toast.error(result.error || 'Failed to save booking')
       }
     } catch (error) {
       console.error('Error saving booking:', error)
@@ -195,20 +217,18 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     value={formData.nurse_id}
                     onChange={(e) => handleInputChange('nurse_id', e.target.value)}
                   >
-                    <option value="">Select nurse</option>
+                    <option value="">Select Nurse</option>
                     {nurses.map(nurse => (
-                      <option key={nurse.id} value={nurse.id}>
-                        {nurse.name}
-                      </option>
+                      <option key={nurse.id} value={nurse.id}>{nurse.name}</option>
                     ))}
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* Service Details */}
+            {/* Service and Location */}
             <div className="md:col-span-2">
-              <h4 className="text-md font-medium text-gray-900 mb-4">Service Details</h4>
+              <h4 className="text-md font-medium text-gray-900 mb-4">Service & Location</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,28 +239,24 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     value={formData.intervention_type_id}
                     onChange={(e) => handleInputChange('intervention_type_id', e.target.value)}
                   >
-                    <option value="">Select intervention type</option>
+                    <option value="">Select Service</option>
                     {intervention_types.map(type => (
-                      <option key={type.id} value={type.id}>
-                        {type.name}
-                      </option>
+                      <option key={type.id} value={type.id}>{type.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Location
+                    Place
                   </label>
                   <select
                     className="clinical-input"
                     value={formData.place_id}
                     onChange={(e) => handleInputChange('place_id', e.target.value)}
                   >
-                    <option value="">Select location</option>
+                    <option value="">Select Location</option>
                     {places.map(place => (
-                      <option key={place.id} value={place.id}>
-                        {place.name}
-                      </option>
+                      <option key={place.id} value={place.id}>{place.name}</option>
                     ))}
                   </select>
                 </div>
@@ -256,12 +272,14 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     Outstanding Amount
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type="text"
                     className="clinical-input"
-                    value={formData.outstanding_amount}
-                    onChange={(e) => handleInputChange('outstanding_amount', parseFloat(e.target.value) || 0)}
+                    value={formData.outstanding_amount === 0 ? '' : formData.outstanding_amount.toString()}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      const numValue = value === '' ? 0 : parseFloat(value) || 0
+                      handleInputChange('outstanding_amount', numValue)
+                    }}
                     placeholder="0.00"
                   />
                 </div>
@@ -270,12 +288,14 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     Paid Amount
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type="text"
                     className="clinical-input"
-                    value={formData.paid_amount}
-                    onChange={(e) => handleInputChange('paid_amount', parseFloat(e.target.value) || 0)}
+                    value={formData.paid_amount === 0 ? '' : formData.paid_amount.toString()}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      const numValue = value === '' ? 0 : parseFloat(value) || 0
+                      handleInputChange('paid_amount', numValue)
+                    }}
                     placeholder="0.00"
                   />
                 </div>
@@ -325,37 +345,35 @@ const BookingModal: React.FC<BookingModalProps> = ({
               />
             </div>
           </div>
+
+          {/* Form Actions */}
+          <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            {mode !== 'view' && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="clinical-button-primary px-4 py-2"
+              >
+                {loading ? 'Saving...' : (mode === 'create' ? 'Create Booking' : 'Update Booking')}
+              </button>
+            )}
+          </div>
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
-          {mode !== 'view' && (
-            <button
-              type="submit"
-              disabled={loading}
-              className="clinical-button-primary px-4 py-2"
-              onClick={handleSubmit}
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Saving...
-                </div>
-              ) : (
-                mode === 'create' ? 'Create Booking' : 'Update Booking'
-              )}
-            </button>
-          )}
+        <div className="p-6 border-t bg-gray-50">
+          <div className="text-sm text-gray-600">
+            {mode === 'create' ? 'Create a new booking for the selected time slot.' : 
+             mode === 'edit' ? 'Update the booking details.' : 
+             'View booking details.'}
+          </div>
         </div>
       </div>
     </div>

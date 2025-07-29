@@ -92,12 +92,12 @@ ALTER TABLE nurse_oncall ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view active nurse staff" ON nurse_staff
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Admins can manage nurse staff" ON nurse_staff
+CREATE POLICY "Nurses and admins can manage nurse staff" ON nurse_staff
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM user_roles ur
             JOIN user_roles_ref urr ON ur.role_id = urr.id
-            WHERE ur.user_id = auth.uid() AND urr.role_name = 'administrator'
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
         )
     );
 
@@ -105,12 +105,12 @@ CREATE POLICY "Admins can manage nurse staff" ON nurse_staff
 CREATE POLICY "Users can view active intervention types" ON intervention_types
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Admins can manage intervention types" ON intervention_types
+CREATE POLICY "Nurses and admins can manage intervention types" ON intervention_types
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM user_roles ur
             JOIN user_roles_ref urr ON ur.role_id = urr.id
-            WHERE ur.user_id = auth.uid() AND urr.role_name = 'administrator'
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
         )
     );
 
@@ -118,12 +118,12 @@ CREATE POLICY "Admins can manage intervention types" ON intervention_types
 CREATE POLICY "Users can view active places" ON places
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Admins can manage places" ON places
+CREATE POLICY "Nurses and admins can manage places" ON places
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM user_roles ur
             JOIN user_roles_ref urr ON ur.role_id = urr.id
-            WHERE ur.user_id = auth.uid() AND urr.role_name = 'administrator'
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
         )
     );
 
@@ -131,11 +131,26 @@ CREATE POLICY "Admins can manage places" ON places
 CREATE POLICY "Users can view bookings" ON nurse_bookings
     FOR SELECT USING (true);
 
-CREATE POLICY "Users can create bookings" ON nurse_bookings
-    FOR INSERT WITH CHECK (auth.uid() = created_by);
+CREATE POLICY "Nurses and admins can create bookings" ON nurse_bookings
+    FOR INSERT WITH CHECK (
+        auth.uid() = created_by OR
+        EXISTS (
+            SELECT 1 FROM user_roles ur
+            JOIN user_roles_ref urr ON ur.role_id = urr.id
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
+        )
+    );
 
-CREATE POLICY "Users can update their own bookings" ON nurse_bookings
-    FOR UPDATE USING (auth.uid() = created_by OR auth.uid() = updated_by);
+CREATE POLICY "Nurses and admins can update bookings" ON nurse_bookings
+    FOR UPDATE USING (
+        auth.uid() = created_by OR 
+        auth.uid() = updated_by OR
+        EXISTS (
+            SELECT 1 FROM user_roles ur
+            JOIN user_roles_ref urr ON ur.role_id = urr.id
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
+        )
+    );
 
 CREATE POLICY "Admins can manage all bookings" ON nurse_bookings
     FOR ALL USING (
@@ -150,12 +165,12 @@ CREATE POLICY "Admins can manage all bookings" ON nurse_bookings
 CREATE POLICY "Users can view oncall assignments" ON nurse_oncall
     FOR SELECT USING (true);
 
-CREATE POLICY "Admins can manage oncall assignments" ON nurse_oncall
+CREATE POLICY "Nurses and admins can manage oncall assignments" ON nurse_oncall
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM user_roles ur
             JOIN user_roles_ref urr ON ur.role_id = urr.id
-            WHERE ur.user_id = auth.uid() AND urr.role_name = 'administrator'
+            WHERE ur.user_id = auth.uid() AND urr.role_name IN ('administrator', 'wound_specialist_nurse')
         )
     );
 

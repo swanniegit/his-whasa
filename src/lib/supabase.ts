@@ -16,47 +16,23 @@ declare global {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Debug logging
-console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing')
-console.log('Supabase Key:', supabaseAnonKey ? 'Set' : 'Missing')
-
-// Create supabase client with fallback to placeholder values if env vars are missing
-const createSupabaseClient = () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Missing Supabase environment variables - using placeholder values')
-    // Use placeholder values for development
-    const placeholderUrl = 'https://placeholder.supabase.co'
-    const placeholderKey = 'placeholder-key'
-    return createClient<Database>(placeholderUrl, placeholderKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      },
-      realtime: {
-        params: {
-          eventsPerSecond: 10
-        }
-      }
-    })
-  }
-
-  console.log('Creating Supabase client with real credentials')
-  return createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10
-      }
-    }
-  })
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables')
 }
 
-export const supabase = createSupabaseClient()
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Helper function to get the current user
+export const getCurrentUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+// Helper function to get the current session
+export const getCurrentSession = async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
+}
 
 // Export types for use throughout the app
 export type { Database } from '../types/database'

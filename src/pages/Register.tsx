@@ -112,22 +112,13 @@ const Register: React.FC = () => {
     setLoading(true)
 
     try {
-      const userData = {
-        username: formData.username,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        professional_registration: formData.professionalRegistration,
-        phone_number: formData.phoneNumber,
-      }
+      const roleId = getRoleIdByName(formData.role) || undefined
 
-      // Get the role ID based on the selected role
-      const roleId = getRoleIdByName(formData.role)
+      const result = await signUp(formData.email, formData.password, formData.firstName, formData.lastName, roleId)
 
-      const result = await signUp(formData.email, formData.password, userData, roleId)
-      
-      if (result.error) {
+      if (!result.success) {
         console.error('Registration failed:', result.error)
-        const errorMessage = result.error?.message || result.error?.toString() || 'Registration failed'
+        const errorMessage = result.error || 'Registration failed'
         toast.error(errorMessage)
       } else {
         toast.success('Registration successful! Please check your email for verification.')

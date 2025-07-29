@@ -113,7 +113,7 @@ export const useOncall = (): UseOncallReturn => {
     }
   }, [user])
 
-  // Load initial data
+  // Load initial data - fixed to prevent infinite loops
   useEffect(() => {
     const loadOncallData = async () => {
       if (!user) return
@@ -128,8 +128,8 @@ export const useOncall = (): UseOncallReturn => {
         end_date.setMonth(end_date.getMonth() + 1)
 
         const data = await getOncallForMonth(
-          start_date.toISOString().split('T')[0],
-          end_date.toISOString().split('T')[0]
+          start_date.toISOString().split('T')[0] || '',
+          end_date.toISOString().split('T')[0] || ''
         )
 
         setOncallAssignments(data)
@@ -142,7 +142,7 @@ export const useOncall = (): UseOncallReturn => {
     }
 
     loadOncallData()
-  }, [user, getOncallForMonth])
+  }, [user]) // Removed getOncallForMonth from dependencies to prevent infinite loops
 
   return {
     oncall_assignments,

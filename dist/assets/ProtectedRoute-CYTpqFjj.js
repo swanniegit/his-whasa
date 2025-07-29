@@ -1,0 +1,2 @@
+import{u as x,j as e,L as f}from"./index-C1SobZH1.js";import{N as r}from"./ui-m8UtK-mZ.js";import"./vendor-C1JoJ-56.js";import"./supabase-Dt6lMAzC.js";const h=({children:n,requiredRole:t,requiredPermission:i,fallbackPath:o="/dashboard"})=>{const{user:a,loading:u,roles:m,isAdmin:s}=x();return u?e.jsx(f,{}):a?t&&!m.some(p=>p.role.role_name===t)&&!s()?e.jsx(r,{to:o,replace:!0}):i&&!s()?e.jsx(r,{to:o,replace:!0}):e.jsx(e.Fragment,{children:n}):e.jsx(r,{to:"/login",replace:!0})};export{h as default};
+//# sourceMappingURL=ProtectedRoute-CYTpqFjj.js.map

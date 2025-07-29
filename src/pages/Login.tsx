@@ -25,7 +25,7 @@ const Login: React.FC = () => {
       } else {
         console.error('Login failed:', result.error)
         // Extract error message properly
-        const errorMessage = result.error?.message || result.error?.toString() || 'Login failed'
+        const errorMessage = result.error || 'Login failed'
         toast.error(errorMessage)
       }
     } catch (error) {

@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { OfflineProvider } from './contexts/OfflineContext'
 import LoadingSpinner from './components/LoadingSpinner'
@@ -39,104 +38,86 @@ function App() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <AuthProvider>
         <OfflineProvider>
-          <BrowserRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true
-            }}
-          >
-            <div className="app">
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
-              
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/test" element={<TestPage />} />
+          <div className="app">
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/test" element={<TestPage />} />
+                
+                {/* Protected Routes */}
+                <Route
+                  path="/"
+                  element={
+                    <BasicProtectedRoute>
+                      <Layout />
+                    </BasicProtectedRoute>
+                  }
+                >
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
                   
-                  {/* Protected Routes */}
-                  <Route
-                    path="/"
+                  {/* Patient Management - Available to all authenticated users */}
+                  <Route path="patients" element={<PatientList />} />
+                  <Route path="patients/new" element={<PatientRegistration />} />
+                  
+                  {/* Booking System - Available to all authenticated users */}
+                  <Route path="booking" element={<BookingSystem />} />
+                  
+                  {/* Clinical Features - Only for Wound Specialists and Admins */}
+                  <Route 
+                    path="patients/:patientId/assessment" 
                     element={
-                      <BasicProtectedRoute>
-                        <Layout />
-                      </BasicProtectedRoute>
-                    }
-                  >
-                    <Route index element={<Navigate to="/dashboard" replace />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    
-                    {/* Patient Management - Available to all authenticated users */}
-                    <Route path="patients" element={<PatientList />} />
-                    <Route path="patients/new" element={<PatientRegistration />} />
-                    
-                    {/* Booking System - Available to all authenticated users */}
-                    <Route path="booking" element={<BookingSystem />} />
-                    
-                    {/* Clinical Features - Only for Wound Specialists and Admins */}
-                    <Route 
-                      path="patients/:patientId/assessment" 
-                      element={
-                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
-                          <WoundAssessment />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="patients/:patientId/care-plan" 
-                      element={
-                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
-                          <CarePlanning />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="patients/:patientId/therapy" 
-                      element={
-                        <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
-                          <TherapyExecution />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    
-                    {/* Settings - Available to all authenticated users */}
-                    <Route path="settings" element={<Settings />} />
-                    
-                    {/* Administration - Only for Admins */}
-                    <Route 
-                      path="admin/reference-tables" 
-                      element={
-                        <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
-                          <ReferenceTables />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="admin/user-management" 
-                      element={
-                        <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
-                          <UserManagement />
-                        </ProtectedRoute>
-                      } 
-                    />
-                  </Route>
+                      <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                        <WoundAssessment />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="patients/:patientId/care-plan" 
+                    element={
+                      <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                        <CarePlanning />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="patients/:patientId/therapy" 
+                    element={
+                      <ProtectedRoute requiredRole="wound_specialist_nurse" fallbackPath="/dashboard">
+                        <TherapyExecution />
+                      </ProtectedRoute>
+                    } 
+                  />
                   
-                  {/* Catch all route */}
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-              </Suspense>
-            </div>
-          </BrowserRouter>
+                  {/* Settings - Available to all authenticated users */}
+                  <Route path="settings" element={<Settings />} />
+                  
+                  {/* Administration - Only for Admins */}
+                  <Route 
+                    path="admin/reference-tables" 
+                    element={
+                      <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
+                        <ReferenceTables />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="admin/user-management" 
+                    element={
+                      <ProtectedRoute requiredRole="administrator" fallbackPath="/dashboard">
+                        <UserManagement />
+                      </ProtectedRoute>
+                    } 
+                  />
+                </Route>
+                
+                {/* Catch all route */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </Suspense>
+          </div>
         </OfflineProvider>
       </AuthProvider>
     </ErrorBoundary>

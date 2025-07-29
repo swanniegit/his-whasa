@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns'
-import { CalendarDay, NurseOncall } from '../../types/booking'
-import { useBookings } from '../../hooks/useBookings'
-import { useOncall } from '../../hooks/useOncall'
+import { CalendarDay, NurseOncall, NurseBooking } from '../../types/booking'
 import { useReferenceData } from '../../hooks/useReferenceData'
 
 interface BookingCalendarProps {
   onDateClick: (date: string) => void
   onMonthChange?: (year: number, month: number) => void
   selectedDate?: string
+  bookings: NurseBooking[]
+  oncall_assignments: NurseOncall[]
 }
 
 const BookingCalendar: React.FC<BookingCalendarProps> = ({
   onDateClick,
   onMonthChange,
-  selectedDate
+  selectedDate,
+  bookings,
+  oncall_assignments
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
 
-  const { bookings } = useBookings()
-  const { oncall_assignments } = useOncall()
   const { nurses } = useReferenceData()
 
   // Generate calendar days for current month
@@ -169,7 +169,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
             {/* Oncall Indicators */}
             {day.oncall_assignments.length > 0 && (
               <div className="mt-1 flex flex-wrap gap-1">
-                {day.oncall_assignments.map((oncall, idx) => (
+                {day.oncall_assignments.map((oncall) => (
                   <div
                     key={oncall.id}
                     className="w-2 h-2 rounded-full"

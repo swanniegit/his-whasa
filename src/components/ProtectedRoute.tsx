@@ -15,10 +15,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRole,
   requiredPermission,
-  resource,
   fallbackPath = '/dashboard'
 }) => {
-  const { user, loading, userRoles, hasPermission, isAdmin } = useAuth()
+  const { user, loading, roles, isAdmin } = useAuth()
 
   if (loading) {
     return <LoadingSpinner />
@@ -30,16 +29,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check for specific role requirement
   if (requiredRole) {
-    const hasRole = userRoles.some(role => role.role_name === requiredRole)
+    const hasRole = roles.some(role => role.role.role_name === requiredRole)
     if (!hasRole && !isAdmin()) {
       return <Navigate to={fallbackPath} replace />
     }
   }
 
-  // Check for specific permission requirement
+  // Check for specific permission requirement (simplified for now)
   if (requiredPermission) {
-    const hasRequiredPermission = hasPermission(requiredPermission, resource)
-    if (!hasRequiredPermission && !isAdmin()) {
+    // For now, just check if user is admin for any permission
+    if (!isAdmin()) {
       return <Navigate to={fallbackPath} replace />
     }
   }

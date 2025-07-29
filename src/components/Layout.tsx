@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { signOut } from '../contexts/AuthContext'
 
 const Layout: React.FC = () => {
-  const { profile, userRoles, isAdmin, isWoundSpecialist, isCaseManager } = useAuth()
+  const { profile, roles, isAdmin, isWoundSpecialist, signOut } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -79,7 +78,7 @@ const Layout: React.FC = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-900">
-                {profile?.full_name || 'User'}
+                {profile ? `${profile.first_name} ${profile.last_name}` : 'User'}
               </p>
               <p className="text-xs text-gray-500">
                 {profile?.email || 'user@example.com'}
@@ -96,11 +95,11 @@ const Layout: React.FC = () => {
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                 Your Roles
               </div>
-              {userRoles.length > 0 ? (
+              {roles && roles.length > 0 ? (
                 <div className="space-y-1">
-                  {userRoles.map((role, index) => (
+                  {roles.map((role, index) => (
                     <div key={index} className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1">
-                      {getRoleDisplayName(role.role_name)}
+                      {getRoleDisplayName(role.role.role_name)}
                     </div>
                   ))}
                 </div>

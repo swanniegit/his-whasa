@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
-import {
-  NurseStaff,
-  InterventionType,
-  Place,
-  UseReferenceDataReturn
-} from '../types/booking'
+import { NurseStaff, InterventionType, Place } from '../types/booking'
+
+interface UseReferenceDataReturn {
+  nurses: NurseStaff[]
+  intervention_types: InterventionType[]
+  places: Place[]
+  loading: boolean
+  error: string | null
+  refreshData: () => Promise<void>
+}
 
 export const useReferenceData = (): UseReferenceDataReturn => {
   const [nurses, setNurses] = useState<NurseStaff[]>([])
@@ -18,8 +22,8 @@ export const useReferenceData = (): UseReferenceDataReturn => {
 
   const loadNurses = useCallback(async () => {
     if (!user) return
-
     try {
+      console.log('Loading nurses...')
       const { data, error: fetchError } = await supabase
         .from('nurse_staff')
         .select('*')
@@ -27,6 +31,7 @@ export const useReferenceData = (): UseReferenceDataReturn => {
         .order('name', { ascending: true })
 
       if (fetchError) throw fetchError
+      console.log('Nurses loaded:', data?.length || 0)
       setNurses(data || [])
     } catch (err) {
       console.error('Error loading nurses:', err)
@@ -36,8 +41,8 @@ export const useReferenceData = (): UseReferenceDataReturn => {
 
   const loadInterventionTypes = useCallback(async () => {
     if (!user) return
-
     try {
+      console.log('Loading intervention types...')
       const { data, error: fetchError } = await supabase
         .from('intervention_types')
         .select('*')
@@ -45,6 +50,7 @@ export const useReferenceData = (): UseReferenceDataReturn => {
         .order('name', { ascending: true })
 
       if (fetchError) throw fetchError
+      console.log('Intervention types loaded:', data?.length || 0)
       setInterventionTypes(data || [])
     } catch (err) {
       console.error('Error loading intervention types:', err)
@@ -54,8 +60,8 @@ export const useReferenceData = (): UseReferenceDataReturn => {
 
   const loadPlaces = useCallback(async () => {
     if (!user) return
-
     try {
+      console.log('Loading places...')
       const { data, error: fetchError } = await supabase
         .from('places')
         .select('*')
@@ -63,6 +69,7 @@ export const useReferenceData = (): UseReferenceDataReturn => {
         .order('name', { ascending: true })
 
       if (fetchError) throw fetchError
+      console.log('Places loaded:', data?.length || 0)
       setPlaces(data || [])
     } catch (err) {
       console.error('Error loading places:', err)
@@ -71,12 +78,10 @@ export const useReferenceData = (): UseReferenceDataReturn => {
   }, [user])
 
   const refreshData = useCallback(async () => {
-    if (!user) return
+    setLoading(true)
+    setError(null)
 
     try {
-      setLoading(true)
-      setError(null)
-
       await Promise.all([
         loadNurses(),
         loadInterventionTypes(),
@@ -88,12 +93,19 @@ export const useReferenceData = (): UseReferenceDataReturn => {
     } finally {
       setLoading(false)
     }
-  }, [user, loadNurses, loadInterventionTypes, loadPlaces])
+  }, [loadNurses, loadInterventionTypes, loadPlaces])
 
   // Load initial data
   useEffect(() => {
-    refreshData()
-  }, [refreshData])
+    if (user) {
+      refreshData()
+    } else {
+      setNurses([])
+      setInterventionTypes([])
+      setPlaces([])
+      setLoading(false)
+    }
+  }, [user, refreshData])
 
   return {
     nurses,

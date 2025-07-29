@@ -67,9 +67,9 @@ export const useBookings = (): UseBookingsReturn => {
 
   const createBooking = useCallback(async (data: BookingFormData): Promise<BookingApiResponse> => {
     if (!user) {
+      console.error('User not authenticated for booking creation')
       return { success: false, error: 'User not authenticated' }
     }
-
     try {
       const { data: booking, error } = await supabase
         .from('nurse_bookings')
@@ -87,14 +87,14 @@ export const useBookings = (): UseBookingsReturn => {
         .single()
 
       if (error) throw error
-
+      
       setBookings(prev => [...prev, booking])
       return { success: true, data: booking }
     } catch (err) {
       console.error('Error creating booking:', err)
-      return { 
-        success: false, 
-        error: err instanceof Error ? err.message : 'Failed to create booking' 
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Failed to create booking'
       }
     }
   }, [user])
